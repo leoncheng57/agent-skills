@@ -86,16 +86,109 @@
   color: var(--term-ink);
 }
 
-.bodySection {
-  margin-top: 3rem;
-  padding-top: 1.75rem;
+/* ------------------------------------------------- collapsible sections */
+
+/* Instructions and Install are both native <details>: collapsed on load,
+   keyboard- and screen-reader-operable with no JavaScript. The <h2> lives
+   inside the <summary> so heading navigation still reaches it while collapsed,
+   and it is what each <details> is aria-labelledby. */
+.disclosure {
+  margin-top: 2rem;
   border-top: 1px solid var(--line);
 }
 
-.bodyHeading {
-  margin: 0 0 1.25rem;
+.summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 1.1rem 0.15rem;
+  cursor: pointer;
+  /* Suppress the default triangle in favour of .marker: `display: flex`
+     already drops Chrome's list-item marker, these cover the rest. */
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Only the outline is restyled — :focus-visible in globals.css supplies the
+   ring, and nothing here may shadow it. */
+.summary:focus-visible {
+  outline-offset: -1px;
+}
+
+.summary:hover .summaryHeading {
+  color: var(--link-color);
+}
+
+.marker {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: inherit;
+  color: var(--link-color);
+  transition: transform 120ms ease;
+}
+
+.disclosure[open] > .summary .marker {
+  transform: rotate(90deg);
+}
+
+.summaryHeading {
+  margin: 0;
   font-size: 1.25rem;
   letter-spacing: -0.01em;
+  scroll-margin-top: 1.5rem;
+}
+
+.summaryHeading code {
+  font-family: var(--mono);
+  font-size: 0.95em;
+}
+
+.summaryMeta {
+  margin-left: auto;
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.disclosureBody {
+  padding: 0.35rem 0.15rem 1.5rem;
+}
+
+/* The install block is a utility area, not part of the document, so it gets
+   the site's panel treatment instead of sitting on the page background. */
+.installDisclosure {
+  margin-top: 2.5rem;
+  border: var(--edge);
+  box-shadow: 7px 7px 0 var(--shadow-color);
+  background: var(--surface-raised);
+}
+
+.installDisclosure > .summary {
+  padding: 0.95rem 1.1rem;
+}
+
+.installDisclosure[open] > .summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.installDisclosure > .disclosureBody {
+  padding: 1.25rem 1.1rem 1.4rem;
+}
+
+@media (max-width: 480px) {
+  .summary {
+    flex-wrap: wrap;
+  }
+
+  .summaryMeta {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
 }
 
 .notFound {

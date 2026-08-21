@@ -5,21 +5,24 @@ import styles from './install-block.module.css'
 
 interface InstallBlockProps {
   skill: string
-  /** Heading level so the block fits both the catalog and a detail page. */
-  headingId?: string
 }
 
-export default function InstallBlock({ skill, headingId = 'install' }: InstallBlockProps): ReactElement {
+/**
+ * The install methods for one skill.
+ *
+ * Renders the body only — the heading and the collapsed/expanded chrome belong
+ * to the caller ({@link ../routes/SkillRoute}), which wraps this and the
+ * instructions in matching `<details>` disclosures.
+ */
+export default function InstallBlock({ skill }: InstallBlockProps): ReactElement {
   return (
-    <section className={styles.block} aria-labelledby={headingId}>
-      <h2 id={headingId} className={styles.heading}>
-        Install <code>{skill}</code>
-      </h2>
-
+    <div className={styles.block}>
       <p className={styles.lede}>
-        Pick one. Each drops the skill into <code>~/.agents/skills/{skill}/</code> — the highest-reach
-        location, read by OpenCode, Cursor, Codex, Copilot, Gemini CLI, Amp, Roo and Zed. Claude Code reads
-        the same layout under <code>~/.claude/skills/</code>, so swap the destination if that is your agent.
+        Pick one. The first four install <strong>globally</strong>, into{' '}
+        <code>~/.agents/skills/{skill}/</code> — the highest-reach location, read by OpenCode, Cursor,
+        Codex, Copilot, Gemini CLI, Amp, Roo and Zed. Claude Code reads the same layout under{' '}
+        <code>~/.claude/skills/</code>, so swap the destination if that is your agent. The last one installs{' '}
+        <strong>into a project</strong> instead, so the skill loads only in that repository.
       </p>
 
       <ol className={styles.methods}>
@@ -27,6 +30,7 @@ export default function InstallBlock({ skill, headingId = 'install' }: InstallBl
           <li key={method.id} className={styles.method}>
             <div className={styles.methodHead}>
               <h3 className={styles.methodLabel}>{method.label}</h3>
+              <span className={styles.methodScope}>{method.scope}</span>
               <CopyButton value={method.command} label={`${method.label} command`} />
             </div>
             <p className={styles.methodNote}>{method.note}</p>
@@ -36,7 +40,13 @@ export default function InstallBlock({ skill, headingId = 'install' }: InstallBl
           </li>
         ))}
       </ol>
-    </section>
+
+      <p className={styles.footnote}>
+        Committing <code>.agents/skills/</code> shares the skill with every agent and every collaborator
+        working in that repository. <code>.claude/skills/{skill}/</code> is the Claude Code equivalent, and{' '}
+        <code>.opencode/skills/{skill}/</code> also works for OpenCode.
+      </p>
+    </div>
   )
 }
 
