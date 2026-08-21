@@ -15,16 +15,21 @@ import { skills as realSkills } from './skillsSource'
  * it. "No simulation" is a legitimate outcome, not a gap — but it has to be a
  * decision someone made.
  */
-const WITHOUT_SIMULATION = [
-  'build-waves',
-  'docs-and-diagram-tooling',
-  'parallel-research-handoff',
-] as const
+const WITHOUT_SIMULATION = ['docs-and-diagram-tooling'] as const
 
 /** Past this the example is trying to be the instructions. */
 const MAX_TURNS = 12
 
 const FILLER_CAVEATS = new Set(['none', 'n/a', 'na', '-', 'nothing'])
+
+/**
+ * Trigger phrases are matched against hard-wrapped markdown, where a phrase
+ * routinely straddles a line break. Line wrapping is not semantic, so it is
+ * flattened before comparing.
+ */
+function flatten(text: string): string {
+  return text.replace(/\s+/g, ' ').toLowerCase()
+}
 
 /**
  * Drops fenced blocks, so a shell comment (`# from the root of your project`)
@@ -282,7 +287,7 @@ describe('the shipped simulations', () => {
       const opening = simulation.turns[0]
 
       expect(opening.role).toBe('user')
-      expect(opening.body.toLowerCase()).toContain(simulation.trigger.toLowerCase())
+      expect(flatten(opening.body)).toContain(flatten(simulation.trigger))
     }
   )
 
@@ -291,7 +296,7 @@ describe('the shipped simulations', () => {
     (_name, skill) => {
       // The drift detector. Rename a trigger in SKILL.md and this fails,
       // rather than leaving a worked example quietly describing the old skill.
-      expect(skill.description.toLowerCase()).toContain(skill.simulation!.trigger.toLowerCase())
+      expect(flatten(skill.description)).toContain(flatten(skill.simulation!.trigger))
     }
   )
 
