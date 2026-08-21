@@ -131,6 +131,8 @@ unnecessary?"
 
 ### The plugin
 
+### The plugin
+
 Lives outside this repo, at `~/.config/opencode/plugins/duck-mode.ts`; it is
 user configuration, not a repo artifact. It is **off by default** and activates
 only with `DUCK_MODE=1` in the environment. Registration is explicit — OpenCode
@@ -139,3 +141,9 @@ of `~/.config/opencode/opencode.json`. Both states were tested: with the variabl
 unset the reply was a bare `alpha`; with `DUCK_MODE=1` the same prompt returned
 `bravo` wrapped in ducks. It typechecks clean under `tsc --strict` against the
 real `Plugin` type.
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+ducks switched on, then a file written to disk without any, and the assistant
+never once mentioning them.
