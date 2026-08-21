@@ -173,3 +173,9 @@ session. Check your available tools before promising output from one.
 | Trace an execution path through real code and draw it | `code-flowchart` |
 | Generate a full multi-file learning guide for a repo | `repo-learning-guide` |
 | Live markdown preview details and routing | `cmux-markdown` |
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+a README diagram with the medium chosen from where it will be read, the house
+style matched, and the block actually rendered before being called done.

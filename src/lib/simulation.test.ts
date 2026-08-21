@@ -7,15 +7,14 @@ import { skills as realSkills } from './skillsSource'
  *
  * Same device as TAG_VOCABULARY in skills.test.ts: a deliberately-reviewed
  * list, so landing a skill with no `SIMULATION.md` means editing this on
- * purpose, in review, rather than letting coverage quietly rot. Rolling a
- * simulation out is one line deleted from here plus the file itself.
+ * purpose, in review, rather than letting coverage quietly rot.
  *
- * An entry is allowed to be permanent. `docs-and-diagram-tooling` is mostly a
- * machine inventory and a decision table; a transcript may genuinely not suit
- * it. "No simulation" is a legitimate outcome, not a gap — but it has to be a
- * decision someone made.
+ * Currently empty — every shipped skill has one. An entry here is allowed to
+ * be permanent if a transcript genuinely does not suit the skill; "no
+ * simulation" is a legitimate outcome, but it has to be a decision someone
+ * made rather than an omission nobody noticed.
  */
-const WITHOUT_SIMULATION = ['docs-and-diagram-tooling'] as const
+const WITHOUT_SIMULATION: readonly string[] = []
 
 /** Past this the example is trying to be the instructions. */
 const MAX_TURNS = 12
