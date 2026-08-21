@@ -1,6 +1,8 @@
 ---
 name: worktree-up
 description: Set up a git worktree for new work — sibling <repo>.worktrees/<topic> directory, branch cut from origin's default, dependencies installed, fixed-port collisions checked against worktrees already running the stack. Use when the user says "make a worktree", "worktree up", "spin up a branch", "work on this in a worktree", or when new code is about to be written and the current checkout is a shared branch.
+metadata:
+  tags: "worktrees"
 ---
 
 # Worktree up

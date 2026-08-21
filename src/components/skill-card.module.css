@@ -54,12 +54,33 @@
   padding: 0;
 }
 
+/* Mirrors the pill on the detail page (routes/skill.module.css), in the
+   terminal palette the card sits in. It is a <button>, which inherits neither
+   font nor colour from the panel, so both are restated rather than assumed. */
 .tag {
+  font-family: var(--mono);
   font-size: 0.72rem;
+  line-height: 1.5;
   padding: 0.15rem 0.5rem;
   border: 1px solid var(--term-line);
   border-radius: 999px;
+  background: transparent;
   color: var(--term-accent-alt);
+  cursor: pointer;
+}
+
+.tag:hover {
+  border-color: var(--term-accent-alt);
+  color: var(--term-accent);
+}
+
+.tag:focus-visible {
+  outline: 2px solid var(--term-accent);
+  outline-offset: 2px;
+}
+
+.hash {
+  opacity: 0.55;
 }
 
 .cta {

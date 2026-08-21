@@ -6,9 +6,15 @@ import type { Skill } from '../lib/skills'
 
 interface SkillCardProps {
   skill: Skill
+  /**
+   * Called with the tag text when a tag chip is activated. The catalog wires
+   * this to its filter query — `filterSkills` already matches tag text, so a
+   * chip needs no filtering machinery of its own.
+   */
+  onTagSelect: (tag: string) => void
 }
 
-export default function SkillCard({ skill }: SkillCardProps): ReactElement {
+export default function SkillCard({ skill, onTagSelect }: SkillCardProps): ReactElement {
   const skillPath = `/s/${skill.name}`
 
   return (
@@ -44,8 +50,21 @@ export default function SkillCard({ skill }: SkillCardProps): ReactElement {
       {skill.tags.length > 0 ? (
         <ul className={styles.tagRow} aria-label={`Tags for ${skill.title}`}>
           {skill.tags.map((tag) => (
-            <li key={tag} className={styles.tag}>
-              #{tag}
+            <li key={tag}>
+              {/* A real button, not a clickable span: it has to be reachable
+                  by keyboard and announced as an action. The `#` is decorative
+                  so that the accessible name stays the tag itself. */}
+              <button
+                type="button"
+                className={styles.tag}
+                onClick={() => onTagSelect(tag)}
+                aria-label={`Filter by ${tag}`}
+              >
+                <span className={styles.hash} aria-hidden="true">
+                  #
+                </span>
+                {tag}
+              </button>
             </li>
           ))}
         </ul>

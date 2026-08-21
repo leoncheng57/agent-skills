@@ -1,6 +1,8 @@
 ---
 name: grill-me
 description: Interview the user in rounds about a plan, design, or decision, working a design tree until every branch is settled and nothing is left silently assumed. Use when the user says "grill me", "grill-me", "stress-test this plan", "poke holes in my design", "interview me about this", or wants to reach shared understanding on a design before anything gets built.
+metadata:
+  tags: "critique"
 ---
 
 # Grill me

@@ -1,6 +1,8 @@
 ---
 name: duck-mode
 description: Wrap every assistant reply in lines of duck emojis. Use when the user says "duck mode", "enable duck mode", "turn on the ducks", or asks for every response to be bracketed by 🦆🦆🦆. Also the repo's worked example of the smallest possible skill, and of when a skill is the wrong mechanism.
+metadata:
+  tags: "output-style"
 ---
 
 # Duck mode
