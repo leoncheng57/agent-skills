@@ -6,6 +6,8 @@ that a coding agent loads on demand when a task matches the skill's description.
 Written for [OpenCode](https://opencode.ai), and compatible with any agent that
 reads `SKILL.md` files with YAML frontmatter (Claude Code included).
 
+Website: <https://leoncheng.dev/agent-skills/>
+
 ## Skills
 
 | Skill | What it does |

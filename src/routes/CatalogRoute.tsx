@@ -1,0 +1,110 @@
+import { useMemo, useState, type ReactElement } from 'react'
+import { InstallScopeTable } from '../components/InstallBlock'
+import SkillCard from '../components/SkillCard'
+import { EXTERNAL_SKILL_SOURCES } from '../lib/externalSkills'
+import { REPO_URL } from '../lib/repo'
+import { filterSkills } from '../lib/skills'
+import { skills } from '../lib/skillsSource'
+import styles from './catalog.module.css'
+
+export default function CatalogRoute(): ReactElement {
+  const [query, setQuery] = useState('')
+  // Every skill is already inlined in the bundle, so filtering is a substring
+  // scan over an in-memory array — no search index, no fetch.
+  const visible = useMemo(() => filterSkills(skills, query), [query])
+
+  return (
+    <div className={styles.page}>
+      <section className={styles.hero}>
+        <h1 className={styles.title}>Portable skills for coding agents</h1>
+        <p className={styles.lede}>
+          An <strong>agent skill</strong> is a directory holding a single <code>SKILL.md</code> file: YAML
+          frontmatter with a <code>name</code> and a <code>description</code>, then a body of instructions.
+          The agent keeps only the description in context and loads the body on demand, when a task matches.
+          It is a way to hand an agent a procedure it would otherwise have to be told every time.
+        </p>
+        <p className={styles.lede}>
+          These are written for <a href="https://opencode.ai">OpenCode</a> and work with any agent that reads{' '}
+          <code>SKILL.md</code>, Claude Code included. MIT licensed —{' '}
+          <a href={REPO_URL}>read the source</a>.
+        </p>
+      </section>
+
+      <section className={styles.catalog} aria-labelledby="catalog-heading">
+        <div className={styles.catalogHead}>
+          <h2 id="catalog-heading" className={styles.sectionTitle}>
+            Skills
+            <span className={styles.count}>
+              {visible.length === skills.length
+                ? `${skills.length}`
+                : `${visible.length} of ${skills.length}`}
+            </span>
+          </h2>
+
+          <label className={styles.filter}>
+            <span className={styles.filterLabel}>filter</span>
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="name, tag, or trigger phrase"
+              className={styles.filterInput}
+              autoComplete="off"
+            />
+          </label>
+        </div>
+
+        {visible.length > 0 ? (
+          <div className={styles.grid}>
+            {visible.map((skill) => (
+              <SkillCard key={skill.name} skill={skill} />
+            ))}
+          </div>
+        ) : (
+          <p className={styles.empty}>
+            No skill matches <code>{query.trim()}</code>.
+          </p>
+        )}
+      </section>
+
+      <section className={styles.section} aria-labelledby="scopes-heading">
+        <h2 id="scopes-heading" className={styles.sectionTitle}>
+          Where skills live
+        </h2>
+        <p className={styles.sectionLede}>
+          A skill is discovered by its location on disk. <code>~/.agents/skills/</code> is the highest-reach
+          one — OpenCode, Cursor, Codex, Copilot, Gemini CLI, Amp, Roo and Zed all read it.{' '}
+          <code>~/.claude/skills/</code> is the Claude Code variant of the same layout. The project-scoped
+          directories are committed with a repository, so the skill only loads inside it.
+        </p>
+        <InstallScopeTable />
+      </section>
+
+      <section className={styles.section} aria-labelledby="external-heading">
+        <h2 id="external-heading" className={styles.sectionTitle}>
+          Skills I use from elsewhere
+        </h2>
+        <p className={styles.sectionLede}>
+          Links, not copies. These are third-party and separately licensed — cmux is GPL-3.0-or-later, which
+          is why it is linked here rather than vendored into this MIT repository.
+        </p>
+        <ul className={styles.externalList}>
+          {EXTERNAL_SKILL_SOURCES.map((source) => (
+            <li key={source.url} className={styles.external}>
+              <h3 className={styles.externalName}>
+                <a href={source.url}>{source.name}</a>
+                <span className={styles.externalLicense}>{source.license}</span>
+              </h3>
+              <p className={styles.externalBlurb}>{source.blurb}</p>
+              <ul className={styles.externalHighlights}>
+                {source.highlights.map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  )
+}
