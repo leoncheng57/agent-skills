@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, type ReactElement } from 'react'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import styles from './App.module.css'
+import SiteFooter from './components/site-footer/SiteFooter'
 import { REPO_URL } from './lib/repo'
 import CatalogRoute from './routes/CatalogRoute'
 
@@ -47,11 +48,13 @@ export default function App(): ReactElement {
         </Suspense>
       </main>
 
-      <footer className={styles.footer}>
-        <p>
+      {/* The MIT/source line that used to be the whole footer now rides in the
+          design-system footer's extraRow slot. */}
+      <SiteFooter className={styles.siteFooter}>
+        <span>
           MIT licensed. Source at <a href={REPO_URL}>{REPO_URL.replace('https://', '')}</a>.
-        </p>
-      </footer>
+        </span>
+      </SiteFooter>
     </div>
   )
 }

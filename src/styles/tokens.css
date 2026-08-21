@@ -31,6 +31,30 @@
 
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   --sans: Arial, Helvetica, sans-serif;
+
+  /* Design-system footer + feedback dialog (#198), ported from leoncheng.dev.
+     Those components read every colour through --sf-* / --fb-* with a
+     fallback to the main site's token names; the mappings below point them at
+     this repo's palette instead. They are deliberately written as var()
+     references rather than literals, so the dark-mode block further down
+     flips the footer along with everything else — there is nothing footer-
+     specific to duplicate there. */
+  /* --hr-color, not --text-primary as upstream: it is this repo's rule/border
+     ink (see --edge) and is identical to --text-primary in light mode, but in
+     dark mode it stays a muted slate instead of a glaring near-white 3px rule. */
+  --sf-line: var(--hr-color);
+  --sf-ink: var(--text-primary);
+  --sf-muted: var(--text-muted);
+
+  --fb-line: var(--hr-color);
+  --fb-ink: var(--text-primary);
+  --fb-muted: var(--text-muted);
+  --fb-surface: var(--surface-raised);
+  --fb-surface-raised: var(--surface);
+  /* Upstream falls back to --blue-emphasis, which this repo does not define;
+     --link-color is the same #087da8 and is the palette's one link blue. */
+  --fb-focus: var(--link-color);
+  --fb-accent: var(--link-color);
 }
 
 /* The terminal cards are dark in both schemes; only the paper around them
