@@ -25,6 +25,7 @@ const TAG_VOCABULARY = [
   'planning',
   'research',
   'subagents',
+  'verification',
   'worktrees',
 ] as const
 
