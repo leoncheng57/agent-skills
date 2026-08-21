@@ -1,8 +1,27 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
-import SkillRoute from './SkillRoute'
-import { skills } from '../lib/skillsSource'
+import { describe, expect, it, vi } from 'vitest'
+
+/**
+ * Every shipped skill now has a worked example, so the "renders nothing"
+ * branch can no longer be reached through real data. It is still a branch
+ * that has to keep working — a skill may legitimately ship without one — so
+ * one synthetic name is layered over the real catalog rather than leaving the
+ * case untested or depending on a gap in the catalog to stay open.
+ */
+const NO_SIMULATION_FIXTURE = 'fixture-without-simulation'
+
+vi.mock('../lib/skillsSource', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../lib/skillsSource')>()
+  const bare = { ...actual.skills[0], name: NO_SIMULATION_FIXTURE, simulation: undefined }
+
+  return {
+    ...actual,
+    findSkill: (name: string) => (name === NO_SIMULATION_FIXTURE ? bare : actual.findSkill(name)),
+  }
+})
+
+const { skills } = await import('../lib/skillsSource')
 
 function renderSkill(name: string) {
   return render(
@@ -14,8 +33,9 @@ function renderSkill(name: string) {
   )
 }
 
+const { default: SkillRoute } = await import('./SkillRoute')
+
 const WITH_SIMULATION = skills.find((skill) => skill.simulation)!
-const WITHOUT_SIMULATION = skills.find((skill) => !skill.simulation)!
 
 describe('SkillRoute', () => {
   it('labels the collapsed instructions disclosure with its visible heading', () => {
@@ -56,7 +76,7 @@ describe('SkillRoute worked example', () => {
   })
 
   it('renders nothing at all for a skill without one', () => {
-    renderSkill(WITHOUT_SIMULATION.name)
+    renderSkill(NO_SIMULATION_FIXTURE)
 
     expect(screen.queryByRole('heading', { level: 2, name: 'Simulation Example' })).toBeNull()
     expect(screen.getByRole('heading', { level: 2, name: 'Full Instructions' })).toBeInTheDocument()
