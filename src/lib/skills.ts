@@ -180,3 +180,10 @@ export function filterSkills(skills: Skill[], query: string): Skill[] {
       .includes(needle)
   )
 }
+
+/** Every tag in the loaded catalog, once and in alphabetical order. */
+export function allTags(skills: ReadonlyArray<Pick<Skill, 'tags'>>): string[] {
+  return [...new Set(skills.flatMap((skill) => skill.tags))].sort((left, right) =>
+    left.localeCompare(right)
+  )
+}
