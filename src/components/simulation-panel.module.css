@@ -1,5 +1,64 @@
+.simulation {
+  min-width: 0;
+  max-width: 100%;
+  margin: 1.65rem 0 2rem;
+  padding: 1rem;
+  border: var(--edge);
+  box-shadow: 7px 7px 0 var(--shadow-color);
+  background: var(--surface-raised);
+}
+
 .panel {
-  margin-top: 0.35rem;
+  min-width: 0;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.controls button,
+.controls select {
+  min-height: 2.1rem;
+  border: 1px solid var(--hr-color);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+}
+
+.controls button {
+  padding: 0.38rem 0.65rem;
+  cursor: pointer;
+}
+
+.controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.speed {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.controls select {
+  padding: 0.3rem 1.7rem 0.3rem 0.55rem;
+}
+
+.status {
+  margin: 0.75rem 0 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--text-muted);
 }
 
 .source {
@@ -22,6 +81,14 @@
 
 .turn + .turn {
   margin-top: 1.35rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: list-item;
 }
 
 /* ------------------------------------------------------- speaker line */
@@ -54,18 +121,18 @@
   content: '· ';
 }
 
-/* One hue per speaker, all four already in tokens.css — the terminal palette
-   is shared across both colour schemes, so nothing here needs a dark variant. */
-.user .speaker {
-  color: var(--term-accent);
+/* The terminal palette is shared across both colour schemes. User and
+   assistant colour applies to the entire turn, not just its label. */
+.user {
+  color: var(--term-user);
 }
 
-.assistant .speaker {
-  color: var(--term-accent-alt);
+.assistant {
+  color: var(--term-assistant);
 }
 
-.tool .speaker,
-.note .speaker {
+.tool,
+.note {
   color: var(--term-muted);
 }
 
@@ -98,7 +165,7 @@
   max-width: none;
   font-size: 0.88rem;
   line-height: 1.7;
-  color: var(--term-ink);
+  color: inherit;
 }
 
 .prose :global(p),
@@ -177,11 +244,22 @@
   gap: 0.55rem;
   margin: 1.6rem 0 0;
   padding-top: 0.9rem;
-  border-top: 1px solid var(--term-line);
+  border-top: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 0.76rem;
   line-height: 1.65;
-  color: var(--term-muted);
+  color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+  .simulation {
+    padding: 0.65rem;
+  }
+
+  .speed {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 .caveatLabel {

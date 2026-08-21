@@ -129,7 +129,7 @@ export default function SkillRoute(): ReactElement {
           Skills without a SIMULATION.md render nothing here. Absent is a
           normal state, not a gap, so there is no placeholder. */}
       {skill.simulation ? (
-        <details className={styles.disclosure} aria-labelledby="simulation">
+        <details className={styles.disclosure} aria-labelledby="simulation" open>
           <summary className={styles.summary}>
             <span className={styles.marker} aria-hidden="true">
               ▸

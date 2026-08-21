@@ -27,6 +27,8 @@
   --term-muted: #7c8286;
   --term-accent: #3ecf8e;
   --term-accent-alt: #7dd8b4;
+  --term-user: #3ecf8e;
+  --term-assistant: #f0a35b;
   --term-line: rgba(237, 238, 240, 0.14);
 
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
