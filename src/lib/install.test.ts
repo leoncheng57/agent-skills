@@ -6,8 +6,27 @@ describe('installMethods', () => {
   const methods = installMethods('cmux-browser')
   const commandFor = (id: string): string => methods.find((method) => method.id === id)!.command
 
-  it('offers the four documented install paths with unique ids', () => {
-    expect(methods.map((method) => method.id)).toEqual(['skills-cli', 'degit', 'curl', 'sparse-symlink'])
+  it('offers the five documented install paths with unique ids', () => {
+    expect(methods.map((method) => method.id)).toEqual([
+      'skills-cli',
+      'degit',
+      'curl',
+      'sparse-symlink',
+      'project-local',
+    ])
+  })
+
+  // The summary row on a skill page counts these, and the lede says "the first
+  // four install globally … the last one installs into a project" — so both the
+  // split and the ordering are load-bearing copy, not incidental.
+  it('groups the global methods first and ends with the single project method', () => {
+    expect(methods.map((method) => method.scope)).toEqual([
+      'global',
+      'global',
+      'global',
+      'global',
+      'project',
+    ])
   })
 
   it('renders the skills CLI command', () => {
@@ -41,6 +60,30 @@ describe('installMethods', () => {
     )
   })
 
+  it('renders the project-local command against a relative .agents/skills path', () => {
+    expect(commandFor('project-local')).toBe(
+      [
+        '# from the root of your project',
+        'npx degit leoncheng57/agent-skills/skills/cmux-browser .agents/skills/cmux-browser',
+      ].join('\n')
+    )
+  })
+
+  // The two scopes differ by exactly one character of destination, and `degit`
+  // will happily write to either: a stray `~/` turns the project method into a
+  // fifth global one, and a relative path in a global method silently installs
+  // into whatever directory the user happened to be standing in.
+  it('keeps the project destination relative and never relative in a global method', () => {
+    for (const method of methods) {
+      if (method.scope === 'project') {
+        expect(method.command).toContain(' .agents/skills/cmux-browser')
+        expect(method.command).not.toContain('~/')
+      } else {
+        expect(method.command).not.toMatch(/(^|\s)\.agents\//)
+      }
+    }
+  })
+
   it('substitutes the skill name everywhere it appears', () => {
     for (const method of installMethods('another-skill')) {
       expect(method.command).toContain('another-skill')
@@ -65,5 +108,20 @@ describe('INSTALL_SCOPES', () => {
 
   it('covers both global and project scopes', () => {
     expect(new Set(INSTALL_SCOPES.map((scope) => scope.scope))).toEqual(new Set(['Global', 'Project']))
+  })
+
+  // The project-local install method writes here, so the reference table has to
+  // list it — and with the same reach as its global twin.
+  it('lists .agents/skills as the highest-reach project path', () => {
+    const project = INSTALL_SCOPES.filter((scope) => scope.scope === 'Project')
+    expect(project[0].path).toBe('.agents/skills/<skill>/')
+    expect(project[0].readBy).toBe(INSTALL_SCOPES[0].readBy)
+  })
+
+  it('documents a destination for every install method scope', () => {
+    const documented = new Set(INSTALL_SCOPES.map((scope) => scope.scope.toLowerCase()))
+    for (const method of installMethods('cmux-browser')) {
+      expect(documented).toContain(method.scope)
+    }
   })
 })

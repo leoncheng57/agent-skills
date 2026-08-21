@@ -1,9 +1,10 @@
 import { useEffect, type ReactElement } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import CopyButton from '../components/CopyButton'
 import InstallBlock from '../components/InstallBlock'
 import SkillMarkdown from '../components/SkillMarkdown'
 import TerminalPanel from '../components/TerminalPanel'
+import { installMethods } from '../lib/install'
 import { skillSourceUrl } from '../lib/repo'
 import { findSkill } from '../lib/skillsSource'
 import styles from './skill.module.css'
@@ -12,6 +13,7 @@ const SITE_TITLE = 'agent-skills'
 
 export default function SkillRoute(): ReactElement {
   const { name = '' } = useParams()
+  const { hash } = useLocation()
   const skill = findSkill(name)
 
   useEffect(() => {
@@ -20,6 +22,25 @@ export default function SkillRoute(): ReactElement {
       document.title = SITE_TITLE
     }
   }, [skill])
+
+  /* Both sections are collapsed on load, and rehype-slug gives every heading in
+     the body an id — so a deep link like /s/<skill>#usage targets an element
+     the browser will not scroll to while its <details> ancestor is shut. Open
+     the ancestors first, then scroll on the next frame once layout has settled. */
+  useEffect(() => {
+    const id = hash.startsWith('#') ? decodeURIComponent(hash.slice(1)) : ''
+    if (!id) return
+
+    const target = document.getElementById(id)
+    if (!target) return
+
+    for (let node: HTMLElement | null = target; node; node = node.parentElement) {
+      if (node instanceof HTMLDetailsElement) node.open = true
+    }
+
+    const frame = requestAnimationFrame(() => target.scrollIntoView())
+    return () => cancelAnimationFrame(frame)
+  }, [hash, skill])
 
   if (!skill) {
     return (
@@ -99,14 +120,37 @@ export default function SkillRoute(): ReactElement {
         </TerminalPanel>
       ) : null}
 
-      <InstallBlock skill={skill.name} />
+      {/* Instructions first: what the skill does is the reason to read the
+          page, and the install methods used to bury it below the fold. */}
+      <details className={styles.disclosure} aria-labelledby="instructions">
+        <summary className={styles.summary}>
+          <span className={styles.marker} aria-hidden="true">
+            ▸
+          </span>
+          <h2 id="instructions" className={styles.summaryHeading}>
+            Instructions
+          </h2>
+          <span className={styles.summaryMeta}>{skill.readingTimeMinutes} min read</span>
+        </summary>
+        <div className={styles.disclosureBody}>
+          <SkillMarkdown content={skill.body} />
+        </div>
+      </details>
 
-      <section className={styles.bodySection} aria-labelledby="instructions">
-        <h2 id="instructions" className={styles.bodyHeading}>
-          Instructions
-        </h2>
-        <SkillMarkdown content={skill.body} />
-      </section>
+      <details className={`${styles.disclosure} ${styles.installDisclosure}`} aria-labelledby="install">
+        <summary className={styles.summary}>
+          <span className={styles.marker} aria-hidden="true">
+            ▸
+          </span>
+          <h2 id="install" className={styles.summaryHeading}>
+            Install <code>{skill.name}</code>
+          </h2>
+          <span className={styles.summaryMeta}>{installMethods(skill.name).length} methods</span>
+        </summary>
+        <div className={styles.disclosureBody}>
+          <InstallBlock skill={skill.name} />
+        </div>
+      </details>
     </article>
   )
 }
