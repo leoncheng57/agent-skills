@@ -163,3 +163,9 @@ reader the work you were delegated. Do this instead:
 | No wall-clock saving | Launched sequentially | One message, multiple tool calls |
 | Synthesis longer than the reports | Concatenated | Answer first, reconcile conflicts, cite, cut |
 | Shallow answers from `explore` | Thoroughness not specified | Say `"very thorough"` in the prompt |
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+four concurrent read-only agents on non-overlapping axes, and a synthesis that
+reconciles two reports that disagreed.

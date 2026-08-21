@@ -207,3 +207,9 @@ needed costs the reader time and costs you credibility on the next one.
 `EXAMPLES.md` in this directory has three complete diagrams — a multi-package
 change set, a request flow with three annotated failure modes, and a
 before/after UI pair — with notes on the specific choices made in each.
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+a change set turned into an annotated tree with two failure modes marked, then
+width-checked before shipping.
