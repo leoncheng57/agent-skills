@@ -194,4 +194,20 @@ describe('the shipped commands', () => {
     expect(realCommands.some((c) => c.relatedSkills.length > 1)).toBe(true)
     expect(realCommands.some((c) => c.relatedSkills.length === 0)).toBe(true)
   })
+
+  it('gives every shipped skill its own one-to-one command', () => {
+    const uncovered = realSkills
+      .filter(
+        (skill) =>
+          !realCommands.some(
+            (command) =>
+              command.relatedSkills.length === 1 && command.relatedSkills[0] === skill.name,
+          ),
+      )
+      .map((skill) => skill.name)
+
+    // Composite commands do not count. `/handoff` names two skills, so both
+    // still need dedicated short forms whose reverse links can be unambiguous.
+    expect(uncovered).toEqual([])
+  })
 })
