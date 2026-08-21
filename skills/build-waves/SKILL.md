@@ -18,6 +18,14 @@ launch and prompt mechanics, `deep-research-subagents` for read-only fan-out,
 sessions, and `manager-children` when the work belongs in multiple interactive
 sessions or worktrees instead of one sustained parent.
 
+These topologies have different continuation semantics. An in-process
+background `task` can return a host-delivered result to its parent conversation.
+A standalone child TUI in cmux cannot resume the parent by writing a status
+file, pushing a PR, changing a badge, or running `cmux notify`. Use
+`manager-children` for that topology and persist enough state for the manager's
+next genuine inbound turn. Never describe a CMUX notification as an automatic
+parent wake-up.
+
 ## Preflight: prove background tasks are available
 
 Run this before promising parallel work:
@@ -123,6 +131,12 @@ have appeared more likely than Opus models to continue through every wave;
 Opus models have sometimes paused after one or two waves for human approval.
 This is an observation, not a guarantee. The durable queue and stopping rule
 must keep working when the model changes or either behavior changes.
+
+Nor is an external process a control mechanism unless it supplies a real wake
+channel. The stopping rule governs what the parent does while it has a turn; it
+does not keep a completed turn scheduled. If the work uses standalone CMUX
+children, the manager resumes only after a user message or a separately tested,
+serialized supervisor prompt. See `manager-children` for that boundary.
 
 > **Evidence from one observed run, not a universal law**
 >
