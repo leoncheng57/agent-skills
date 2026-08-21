@@ -50,7 +50,8 @@ function prefersReducedMotion(): boolean {
 }
 
 function delayLabel(milliseconds: number): string {
-  return `${milliseconds / 1000}s`
+  const seconds = Math.max(0, milliseconds) / 1000
+  return `${seconds >= 1 ? Math.ceil(seconds) : Math.ceil(seconds * 10) / 10}s`
 }
 
 /**
@@ -74,6 +75,7 @@ export default function SimulationPanel({
   const [speed, setSpeed] = useState<Speed>(1)
   const [reducedMotion, setReducedMotion] = useState(prefersReducedMotion)
   const [isPlaying, setIsPlaying] = useState(() => !prefersReducedMotion() && totalFrames > 1)
+  const [remainingMs, setRemainingMs] = useState(() => frameDelayMs(1))
 
   useEffect(() => {
     if (typeof window.matchMedia !== 'function') return
@@ -91,13 +93,27 @@ export default function SimulationPanel({
   useEffect(() => {
     if (!isPlaying || reducedMotion || currentFrame >= totalFrames - 1) return
 
+    const delay = frameDelayMs(speed)
+    const deadline = Date.now() + delay
+    setRemainingMs(delay)
+
+    // The frame timeout controls playback. The interval is display-only and
+    // derives from an absolute deadline, so throttled ticks cannot accumulate
+    // drift or make the countdown claim more time than remains.
+    const countdown = window.setInterval(() => {
+      setRemainingMs(Math.max(0, deadline - Date.now()))
+    }, 100)
+
     const timer = window.setTimeout(() => {
       const next = nextFrame(currentFrame, totalFrames)
       setCurrentFrame(next)
       if (next >= totalFrames - 1) setIsPlaying(false)
-    }, frameDelayMs(speed))
+    }, delay)
 
-    return () => window.clearTimeout(timer)
+    return () => {
+      window.clearInterval(countdown)
+      window.clearTimeout(timer)
+    }
   }, [currentFrame, isPlaying, reducedMotion, speed, totalFrames])
 
   const moveTo = (frame: number) => {
@@ -105,13 +121,15 @@ export default function SimulationPanel({
     setCurrentFrame(frame)
   }
 
-  const status = reducedMotion
-    ? `frame ${currentFrame + 1} of ${totalFrames} · Autoplay off (reduced motion)`
+  const frameStatus = `frame ${currentFrame + 1} of ${totalFrames}`
+  const playbackStatus = reducedMotion
+    ? 'Autoplay off (reduced motion)'
     : isPlaying
-      ? `frame ${currentFrame + 1} of ${totalFrames} · next frame in ${delayLabel(frameDelayMs(speed))}`
+      ? `next frame in ${delayLabel(remainingMs)}`
       : currentFrame >= totalFrames - 1
-        ? `frame ${currentFrame + 1} of ${totalFrames} · playback complete`
-        : `frame ${currentFrame + 1} of ${totalFrames} · paused`
+        ? 'playback complete'
+        : 'paused'
+  const delay = frameDelayMs(speed)
 
   return (
     <section className={styles.simulation} aria-label="Simulation playback">
@@ -148,9 +166,26 @@ export default function SimulationPanel({
         </label>
       </div>
 
-      <p className={styles.status} aria-live="polite">
-        {status}
-      </p>
+      <div className={styles.playbackStatus}>
+        <p className={styles.status}>
+          {/* Announce frame changes, not every countdown tick. A live region
+              saying "3, 2, 1" on every frame would make autoplay unusable for
+              screen-reader users. */}
+          <span aria-live="polite">{frameStatus}</span>
+          <span aria-hidden="true"> · {playbackStatus}</span>
+          <span className={styles.srOnly}>
+            {isPlaying ? ' Autoplay active.' : ` ${playbackStatus}.`}
+          </span>
+        </p>
+        {isPlaying ? (
+          <progress
+            className={styles.progress}
+            max={delay}
+            value={Math.min(delay, Math.max(0, delay - remainingMs))}
+            aria-label="Time until next frame"
+          />
+        ) : null}
+      </div>
 
       <TerminalPanel
         as="section"
