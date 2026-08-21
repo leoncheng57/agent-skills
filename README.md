@@ -10,17 +10,20 @@ Website: <https://leoncheng.dev/agent-skills/>
 
 ## Skills
 
-| Skill | What it does |
-|---|---|
-| [`grill-me`](skills/grill-me/SKILL.md) | Interview the user in rounds about a plan or design, asking the whole frontier of the decision tree at once, until no branch is left silently assumed. |
-| [`parallel-research-handoff`](skills/parallel-research-handoff/SKILL.md) | Research several independent feature ideas in parallel with read-only subagents, compile the findings into self-contained handoff prompts, and fire those prompts off as parallel agent sessions in fresh git worktrees. |
-| [`red-team-this`](skills/red-team-this/SKILL.md) | Argue against a plan, design, or diff the agent just produced — six fixed objection classes, every objection cited to `file:line`, ranked by expected cost, closing on a verdict. |
-| [`worktree-up`](skills/worktree-up/SKILL.md) | Set up a git worktree for new work: sibling `<repo>.worktrees/<topic>`, branch off origin's default, install deps, and check fixed-port collisions before starting a stack. |
+Browse the [complete skill catalog](https://leoncheng.dev/agent-skills/). The site
+discovers every `skills/*/SKILL.md` directly, so it is the canonical inventory and
+cannot drift from this repository.
 
 ## Install
 
-Clone anywhere, then symlink the skills you want into your agent's skills
-directory:
+Install with the [skills CLI](https://skills.sh/):
+
+```bash
+npx skills add leoncheng57/agent-skills
+```
+
+Or clone the repository and symlink individual skills into your agent's skills
+directory for automatic updates:
 
 ```bash
 git clone https://github.com/leoncheng57/agent-skills.git ~/Documents/Projects/agent-skills
