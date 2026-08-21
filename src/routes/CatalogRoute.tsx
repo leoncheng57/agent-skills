@@ -2,9 +2,8 @@ import cx from 'classnames'
 import { useCallback, useMemo, useRef, useState, type ReactElement } from 'react'
 import { InstallScopeTable } from '../components/InstallBlock'
 import SkillCard from '../components/SkillCard'
-import { EXTERNAL_SKILL_SOURCES } from '../lib/externalSkills'
 import { REPO_URL } from '../lib/repo'
-import { filterSkills } from '../lib/skills'
+import { allTags, filterSkills } from '../lib/skills'
 import { skills } from '../lib/skillsSource'
 import styles from './catalog.module.css'
 
@@ -14,6 +13,7 @@ export default function CatalogRoute(): ReactElement {
   // Every skill is already inlined in the bundle, so filtering is a substring
   // scan over an in-memory array — no search index, no fetch.
   const visible = useMemo(() => filterSkills(skills, query), [query])
+  const tags = useMemo(() => allTags(skills), [])
 
   // A tag chip is just a shortcut into the existing filter. Focus moves to the
   // input afterwards for two reasons: it shows *why* the grid changed, and the
@@ -81,6 +81,27 @@ export default function CatalogRoute(): ReactElement {
           </div>
         </div>
 
+        <div className={styles.examples}>
+          <span className={styles.examplesLabel}>try:</span>
+          <ul className={styles.exampleList} aria-label="Filter examples">
+            {tags.map((tag) => (
+              <li key={tag}>
+                <button
+                  type="button"
+                  className={styles.exampleTag}
+                  onClick={() => selectTag(tag)}
+                  aria-label={`Filter by ${tag}`}
+                >
+                  <span className={styles.exampleHash} aria-hidden="true">
+                    #
+                  </span>
+                  {tag}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {visible.length > 0 ? (
           <div className={styles.grid}>
             {visible.map((skill) => (
@@ -105,32 +126,6 @@ export default function CatalogRoute(): ReactElement {
           directories are committed with a repository, so the skill only loads inside it.
         </p>
         <InstallScopeTable />
-      </section>
-
-      <section className={styles.section} aria-labelledby="external-heading">
-        <h2 id="external-heading" className={styles.sectionTitle}>
-          Skills I use from elsewhere
-        </h2>
-        <p className={styles.sectionLede}>
-          Links, not copies. These are third-party and separately licensed — cmux is GPL-3.0-or-later, which
-          is why it is linked here rather than vendored into this MIT repository.
-        </p>
-        <ul className={styles.externalList}>
-          {EXTERNAL_SKILL_SOURCES.map((source) => (
-            <li key={source.url} className={styles.external}>
-              <h3 className={styles.externalName}>
-                <a href={source.url}>{source.name}</a>
-                <span className={styles.externalLicense}>{source.license}</span>
-              </h3>
-              <p className={styles.externalBlurb}>{source.blurb}</p>
-              <ul className={styles.externalHighlights}>
-                {source.highlights.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
       </section>
     </div>
   )
