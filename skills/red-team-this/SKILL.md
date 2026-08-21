@@ -167,3 +167,9 @@ anything is a red team the user learns to discount.
 | Highest-scored objection is unactionable | Ranked by severity alone | Include cost-to-check; cheap checks rank up |
 | Review ends with "several concerns" | No verdict | proceed / proceed-with-change / stop |
 | Same blind spot as the plan | Ran in the authoring context | Dispatch as a sub-agent with only the artifact |
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+a rate-limiter plan attacked with four grounded objections, one speculative
+one kept separate, a ranked table and a `proceed-with-change` verdict.

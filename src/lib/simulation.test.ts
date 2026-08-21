@@ -16,13 +16,9 @@ import { skills as realSkills } from './skillsSource'
  * decision someone made.
  */
 const WITHOUT_SIMULATION = [
-  'ascii-diagrams',
-  'background-subagent',
   'build-waves',
-  'deep-research-subagents',
   'docs-and-diagram-tooling',
   'parallel-research-handoff',
-  'red-team-this',
 ] as const
 
 /** Past this the example is trying to be the instructions. */

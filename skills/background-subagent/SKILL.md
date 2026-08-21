@@ -158,3 +158,9 @@ than a fresh agent for a follow-up on the same material.
 | Subagent worked on the wrong file | Relative path or "that file" | Absolute paths only |
 | Duplicated work, conflicting edits | Kept working after launching | Report and stop, or pick non-overlapping work |
 | User never sees the result | Result is invisible to the user by design | Relay a summary when the notification arrives |
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing,
+showing both branches of the precondition check — the flag unset and refused,
+then set and launched, with the turn ending at the report.

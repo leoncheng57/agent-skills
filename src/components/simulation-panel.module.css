@@ -90,13 +90,22 @@
 /* SkillMarkdown's base class is tuned for the light page. Everything below
    re-points it at the terminal palette for this panel only, so the site keeps
    exactly one react-markdown pipeline. */
-/* Measure is inherited from the base class, so the transcript sits on the same
-   line length as the description panel above it rather than stopping short and
-   leaving a dead strip of chrome. */
+/* Prose keeps a readable measure, but the wide artifacts a transcript is made
+   of — ranked tables, file trees, command output — get the full panel width.
+   Capping those at 74ch wraps a five-column table into an unreadable column of
+   fragments. */
 .prose {
+  max-width: none;
   font-size: 0.88rem;
   line-height: 1.7;
   color: var(--term-ink);
+}
+
+.prose :global(p),
+.prose :global(ul),
+.prose :global(ol),
+.prose :global(blockquote) {
+  max-width: 74ch;
 }
 
 .prose :global(p),
