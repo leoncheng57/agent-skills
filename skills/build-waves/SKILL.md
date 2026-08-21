@@ -154,3 +154,9 @@ ORDER BY time_created;
 Use the rows to find which child produced a claim, inspect its transcript, and
 compare planned ownership with actual delegation. Treat the audit as evidence
 for improving the next wave plan, not as a substitute for final verification.
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+one wave boundary, with the next wave's research overlapping the current wave's
+writes and the run continuing without asking permission.

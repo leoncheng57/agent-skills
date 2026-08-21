@@ -210,3 +210,9 @@ cmux workspace create --name "<a>" --cwd "$WT/<a>" --focus false \
 | Prompt arrives mangled | Smart quotes / multi-line through a flag | ASCII only, prompt in a file |
 | Subagent starts editing during research | Read-only stated once, in the middle | State it at the top and the bottom |
 | Feature ships but does nothing at runtime | Gating flags never probed | Curl the live API, not just the source |
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+two features researched in parallel, worktrees cut and baselined, and a handoff
+prompt shown to the user — stopping at the two checkpoints rather than firing.
