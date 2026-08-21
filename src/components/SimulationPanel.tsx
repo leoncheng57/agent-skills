@@ -1,8 +1,15 @@
-import type { ReactElement } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import SkillMarkdown from './SkillMarkdown'
 import TerminalPanel from './TerminalPanel'
 import { simulationSourceUrl } from '../lib/repo'
 import type { Simulation, TurnRole } from '../lib/simulation'
+import {
+  frameDelayMs,
+  nextFrame,
+  previousFrame,
+  SPEEDS,
+  type Speed,
+} from '../lib/simulationPlayback'
 import styles from './simulation-panel.module.css'
 
 interface SimulationPanelProps {
@@ -29,6 +36,14 @@ const ROLE_CLASS: Record<TurnRole, string> = {
   note: styles.note,
 }
 
+function prefersReducedMotion(): boolean {
+  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function delayLabel(milliseconds: number): string {
+  return `${milliseconds / 1000}s`
+}
+
 /**
  * The one renderer for every skill's worked example.
  *
@@ -41,44 +56,131 @@ export default function SimulationPanel({
   skillName,
   simulation,
 }: SimulationPanelProps): ReactElement {
+  const totalFrames = simulation.turns.length
+  const [currentFrame, setCurrentFrame] = useState(0)
+  const [speed, setSpeed] = useState<Speed>(1)
+  const [reducedMotion, setReducedMotion] = useState(prefersReducedMotion)
+  const [isPlaying, setIsPlaying] = useState(() => !prefersReducedMotion() && totalFrames > 1)
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleChange = (event: MediaQueryListEvent) => {
+      setReducedMotion(event.matches)
+      if (event.matches) setIsPlaying(false)
+    }
+
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  useEffect(() => {
+    if (!isPlaying || reducedMotion || currentFrame >= totalFrames - 1) return
+
+    const timer = window.setTimeout(() => {
+      const next = nextFrame(currentFrame, totalFrames)
+      setCurrentFrame(next)
+      if (next >= totalFrames - 1) setIsPlaying(false)
+    }, frameDelayMs(speed))
+
+    return () => window.clearTimeout(timer)
+  }, [currentFrame, isPlaying, reducedMotion, speed, totalFrames])
+
+  const moveTo = (frame: number) => {
+    setIsPlaying(false)
+    setCurrentFrame(frame)
+  }
+
+  const status = reducedMotion
+    ? `frame ${currentFrame + 1} of ${totalFrames} · Autoplay off (reduced motion)`
+    : isPlaying
+      ? `frame ${currentFrame + 1} of ${totalFrames} · next frame in ${delayLabel(frameDelayMs(speed))}`
+      : currentFrame >= totalFrames - 1
+        ? `frame ${currentFrame + 1} of ${totalFrames} · playback complete`
+        : `frame ${currentFrame + 1} of ${totalFrames} · paused`
+
   return (
-    <TerminalPanel
-      as="section"
-      path={`skills/${skillName}/SIMULATION.md`}
-      className={styles.panel}
-      action={
-        <a className={styles.source} href={simulationSourceUrl(skillName)}>
-          source
-        </a>
-      }
-    >
-      <ol className={styles.turns}>
-        {simulation.turns.map((turn, index) => {
-          const isNote = turn.role === 'note'
-          // Notes are editorial: they explain why the assistant did that.
-          // Marking them up as an aside keeps them out of the reply itself.
-          const Body = isNote ? 'aside' : 'div'
+    <section className={styles.simulation} aria-label="Simulation playback">
+      <div className={styles.controls}>
+        <button
+          type="button"
+          onClick={() => setIsPlaying((playing) => !playing)}
+          disabled={reducedMotion || currentFrame >= totalFrames - 1}
+        >
+          {isPlaying ? '❚❚ Pause' : '▶ Play'}
+        </button>
+        <button type="button" onClick={() => moveTo(previousFrame(currentFrame))} disabled={currentFrame === 0}>
+          ← Previous
+        </button>
+        <button
+          type="button"
+          onClick={() => moveTo(nextFrame(currentFrame, totalFrames))}
+          disabled={currentFrame >= totalFrames - 1}
+        >
+          Next →
+        </button>
+        <button type="button" onClick={() => moveTo(0)}>
+          ↺ Reset
+        </button>
+        <label className={styles.speed}>
+          <span>speed</span>
+          <select value={speed} onChange={(event) => setSpeed(Number(event.target.value) as Speed)}>
+            {SPEEDS.map((option) => (
+              <option key={option} value={option}>
+                {option}x
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
-          return (
-            <li key={index} className={`${styles.turn} ${ROLE_CLASS[turn.role]}`}>
-              <p className={styles.speaker}>
-                <span className={styles.marker} aria-hidden="true">
-                  {isNote ? '←' : '▌'}
-                </span>
-                <span className={styles.role}>{ROLE_LABEL[turn.role]}</span>
-                {turn.label ? <span className={styles.label}>{turn.label}</span> : null}
-              </p>
-              <Body className={styles.body}>
-                <SkillMarkdown content={turn.body} className={styles.prose} />
-              </Body>
-            </li>
-          )
-        })}
-      </ol>
+      <p className={styles.status} aria-live="polite">
+        {status}
+      </p>
 
-      {/* Every static transcript compresses something. Saying what, in the
-          panel rather than in frontmatter, is what stops the example being
-          read as a promise. */}
+      <TerminalPanel
+        as="section"
+        path={`skills/${skillName}/SIMULATION.md`}
+        className={styles.panel}
+        action={
+          <a className={styles.source} href={simulationSourceUrl(skillName)}>
+            source
+          </a>
+        }
+      >
+        <ol className={styles.turns}>
+          {simulation.turns.map((turn, index) => {
+            const isNote = turn.role === 'note'
+            const isVisible = index <= currentFrame
+            // Notes are editorial: they explain why the assistant did that.
+            // Marking them up as an aside keeps them out of the reply itself.
+            const Body = isNote ? 'aside' : 'div'
+
+            return (
+              <li
+                key={index}
+                className={`${styles.turn} ${ROLE_CLASS[turn.role]} ${isVisible ? styles.visible : styles.hidden}`}
+                hidden={!isVisible}
+              >
+                <p className={styles.speaker}>
+                  <span className={styles.marker} aria-hidden="true">
+                    {isNote ? '←' : '▌'}
+                  </span>
+                  <span className={styles.role}>{ROLE_LABEL[turn.role]}</span>
+                  {turn.label ? <span className={styles.label}>{turn.label}</span> : null}
+                </p>
+                <Body className={styles.body}>
+                  <SkillMarkdown content={turn.body} className={styles.prose} />
+                </Body>
+              </li>
+            )
+          })}
+        </ol>
+      </TerminalPanel>
+
+      {/* Every static transcript compresses something. Saying what is what
+          stops the example being read as a promise. */}
       <p className={styles.caveat}>
         <span className={styles.caveatLabel} aria-hidden="true">
           ⚠
@@ -86,6 +188,6 @@ export default function SimulationPanel({
         <span className={styles.srOnly}>Caveat: </span>
         {simulation.caveat}
       </p>
-    </TerminalPanel>
+    </section>
   )
 }

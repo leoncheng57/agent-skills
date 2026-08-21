@@ -51,7 +51,7 @@ describe('SkillRoute', () => {
 })
 
 describe('SkillRoute worked example', () => {
-  it('shows a collapsed disclosure for a skill that ships one', () => {
+  it('shows an open disclosure for a skill that ships one', () => {
     renderSkill(WITH_SIMULATION.name)
 
     const heading = screen.getByRole('heading', { level: 2, name: 'Simulation Example' })
@@ -59,7 +59,7 @@ describe('SkillRoute worked example', () => {
 
     expect(heading).toHaveAttribute('id', 'simulation')
     expect(disclosure).toHaveAttribute('aria-labelledby', 'simulation')
-    expect(disclosure).not.toHaveAttribute('open')
+    expect(disclosure).toHaveAttribute('open')
   })
 
   it('summarises the scenario so the section is worth opening', () => {
