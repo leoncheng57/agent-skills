@@ -23,3 +23,8 @@ export const SITE_URL = 'https://leoncheng.dev/agent-skills/'
 export function skillSourceUrl(skillName: string): string {
   return `${REPO_URL}/blob/${DEFAULT_BRANCH}/skills/${skillName}/SKILL.md`
 }
+
+/** The worked example beside a skill. Only linked when the file exists. */
+export function simulationSourceUrl(skillName: string): string {
+  return `${REPO_URL}/blob/${DEFAULT_BRANCH}/skills/${skillName}/SIMULATION.md`
+}

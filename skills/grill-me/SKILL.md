@@ -123,3 +123,10 @@ Ask which; write it if they want it.
 | User picks every recommendation without thought | Recommendations offered with no reasoning | Give the why, and name the tradeoff being made |
 | Agreement reached, then relitigated during build | Outcome never written down | Emit the handoff doc or ADR |
 | Session ends still holding assumptions | Stopped when questions ran out, not when the frontier emptied | Recompute the frontier; unvisited branches remain |
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+round 1 of a grilling on a Redis caching plan, showing a full frontier asked in
+one round, a fact looked up rather than asked, and a question deliberately held
+back for round 2.

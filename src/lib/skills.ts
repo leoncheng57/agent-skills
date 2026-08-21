@@ -1,4 +1,7 @@
 import { parseFrontmatter, stripLeadingHeading } from './frontmatter'
+// Type-only, so nothing is imported at runtime and the fact that
+// simulation.ts imports `directoryNameFromPath` from here is not a cycle.
+import type { Simulation } from './simulation'
 
 /**
  * The Agent Skills spec (agentskills.io) requires only `name` and
@@ -32,6 +35,12 @@ export interface Skill {
   readingTimeMinutes: number
   /** Body length in bytes, shown as a rough weight indicator. */
   bytes: number
+  /**
+   * The worked example from the sibling `SIMULATION.md`, when the skill
+   * directory ships one. Absent is a normal state, not a gap: the page simply
+   * renders without that section.
+   */
+  simulation?: Simulation
 }
 
 const WORDS_PER_MINUTE = 220
@@ -126,7 +135,7 @@ function byteLength(text: string): number {
   return typeof TextEncoder === 'undefined' ? text.length : new TextEncoder().encode(text).length
 }
 
-export function parseSkill(path: string, raw: string): Skill | null {
+export function parseSkill(path: string, raw: string, simulation?: Simulation): Skill | null {
   const directoryName = directoryNameFromPath(path)
   if (!directoryName) {
     return null
@@ -152,13 +161,24 @@ export function parseSkill(path: string, raw: string): Skill | null {
     body,
     readingTimeMinutes: readingTimeMinutes(body),
     bytes: byteLength(raw),
+    ...(simulation ? { simulation } : {}),
   }
 }
 
-/** Sorted by name so the catalog order is stable across builds. */
-export function loadSkillsFromFiles(files: Record<string, string>): Skill[] {
+/**
+ * Sorted by name so the catalog order is stable across builds.
+ *
+ * `simulations` is keyed by skill directory name and defaults to empty, which
+ * keeps every existing caller and test working unchanged. A simulation whose
+ * directory has no `SKILL.md` produces no skill and is silently dropped —
+ * `simulation.test.ts` asserts no such orphan exists.
+ */
+export function loadSkillsFromFiles(
+  files: Record<string, string>,
+  simulations: ReadonlyMap<string, Simulation> = new Map()
+): Skill[] {
   return Object.entries(files)
-    .map(([path, raw]) => parseSkill(path, raw))
+    .map(([path, raw]) => parseSkill(path, raw, simulations.get(directoryNameFromPath(path))))
     .filter((skill): skill is Skill => skill !== null)
     .sort((left, right) => left.name.localeCompare(right.name))
 }
