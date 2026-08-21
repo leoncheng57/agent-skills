@@ -149,6 +149,80 @@ file, the way `ascii-diagrams/SKILL.md` points at its `EXAMPLES.md`.
 
 `skills/grill-me/` is the reference implementation of all of the above.
 
+## Custom commands
+
+Alongside the skills, this repo ships **OpenCode custom commands** — single
+markdown files you fire by typing `/name` in the TUI.
+
+```
+commands/<name>.md              the command itself
+command-simulations/<name>.md   its worked example (site + docs only)
+```
+
+Browse them at <https://leoncheng.dev/agent-skills/commands>.
+
+### Why both
+
+|  | Skill | Command |
+|---|---|---|
+| Invoked by | the model, matching your prompt | you, typing `/name` |
+| In context | description on **every** turn | nothing until fired |
+| Cost at rest | ~570 chars each, forever | zero |
+| Arguments | none | `$ARGUMENTS`, `$1`, `$2` |
+| Shell output | none | `` !`npm test` `` runs at fire time |
+| File refs | none | `@src/foo.ts` inlined |
+| Routes to agent/model | no | `agent:`, `model:` |
+| Runs off-context | no | `subtask: true` |
+| Portable | 6 paths, 3 agent families | **OpenCode only** |
+
+The twelve skills here cost about 5,700 characters of permanently-resident
+context, and that grows with every skill added. A command catalogue is free by
+comparison — which is why commands can be plentiful and skills should not be.
+
+The other half of it is **long sessions**. A skill body is injected when the
+skill fires and then ages out, or gets compacted away entirely. A command
+re-injects exact text at the turn you type it, at turn 40, after compaction.
+See the Reliability section of `skills/duck-mode/SKILL.md` for the measured
+version of that decay.
+
+### The house rule
+
+A command carries the **happy path**. Its skill carries the **failure modes**.
+A command that links a skill ends by deferring to it and never restates its
+failure-mode table — two copies drift. This is enforced by a test.
+
+Three legitimate shapes:
+
+1. **Thin trigger over a skill** — `/worktree-up`, `/grill-me`, `/red-team`.
+2. **Does something a skill cannot** — `/verify` bakes `npm test` output into
+   the prompt; `/handoff` uses `subtask: true` to compile off-context.
+3. **No skill behind it** — `/standup`. Small utilities do not earn a permanent
+   slot in the agent's retrieval context.
+
+### Format
+
+```markdown
+---
+description: Shown in the TUI autocomplete
+agent: build          # optional: build | plan
+model: provider/model # optional
+subtask: true         # optional: run in a subagent
+---
+
+The template. $ARGUMENTS is substituted, !`cmd` output is injected,
+and @path/to/file.ts is inlined — all before the model sees it.
+```
+
+Install to `~/.config/opencode/commands/<name>.md` (global) or
+`.opencode/commands/<name>.md` (project). Restart OpenCode afterwards.
+
+Worked examples live in a **separate** `command-simulations/` directory rather
+than beside the command, which is the one place this diverges from skills. The
+reason is mechanical: OpenCode registers every `.md` in `commands/` as an
+invocable command, so a sibling `verify.SIMULATION.md` would put a bogus
+`/verify.SIMULATION` in your autocomplete. The file format is identical and the
+skill parser is reused verbatim.
+
 ## Credits
 
 One skill here is adapted from another MIT-licensed project. See

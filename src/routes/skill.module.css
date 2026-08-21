@@ -207,3 +207,78 @@
   line-height: 1.7;
   color: var(--text-muted);
 }
+
+/* Command pages state their relationship to a skill (or the deliberate lack of
+   one) directly under the description, because "is this the same thing as the
+   skill?" is the first question a visitor arriving from the skills grid has. */
+.relation {
+  max-width: 74ch;
+  margin: 1.1rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* Install list, shared shape with InstallBlock but scoped to the command page
+   so the two can diverge without one silently restyling the other. */
+.methods {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.method + .method {
+  margin-top: 1.6rem;
+}
+
+.methodHead {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.methodLabel {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.methodScope {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-muted);
+}
+
+.methodNote {
+  margin: 0 0 0.5rem;
+  max-width: 74ch;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.command {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--hr-color);
+  border-radius: 8px;
+  background: var(--term-bg);
+  color: var(--term-ink);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.footnote {
+  margin: 1.4rem 0 0;
+  max-width: 74ch;
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}

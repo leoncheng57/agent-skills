@@ -7,6 +7,7 @@ import SkillMarkdown from '../components/SkillMarkdown'
 import TerminalPanel from '../components/TerminalPanel'
 import { installMethods } from '../lib/install'
 import { skillSourceUrl } from '../lib/repo'
+import { commandForSkill } from '../lib/commandsSource'
 import { findSkill } from '../lib/skillsSource'
 import styles from './skill.module.css'
 
@@ -16,6 +17,7 @@ export default function SkillRoute(): ReactElement {
   const { name = '' } = useParams()
   const { hash } = useLocation()
   const skill = findSkill(name)
+  const command = skill ? commandForSkill(skill.name) : undefined
 
   useEffect(() => {
     document.title = skill ? `${skill.title} — ${SITE_TITLE}` : `Not found — ${SITE_TITLE}`
@@ -119,6 +121,13 @@ export default function SkillRoute(): ReactElement {
               rather than summarised. */}
           <p className={styles.description}>{skill.description}</p>
         </TerminalPanel>
+      ) : null}
+
+      {command ? (
+        <p className={styles.relation}>
+          Short form available: <Link to={`/c/${command.name}`}>/{command.name}</Link> fires the happy path
+          in one line, and defers back here for the failure modes.
+        </p>
       ) : null}
 
       {/* Cheapest question first. The page reads description (always visible)
