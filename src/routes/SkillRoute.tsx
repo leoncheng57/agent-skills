@@ -2,6 +2,7 @@ import { useEffect, type ReactElement } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import CopyButton from '../components/CopyButton'
 import InstallBlock from '../components/InstallBlock'
+import SimulationPanel from '../components/SimulationPanel'
 import SkillMarkdown from '../components/SkillMarkdown'
 import TerminalPanel from '../components/TerminalPanel'
 import { installMethods } from '../lib/install'
@@ -120,7 +121,31 @@ export default function SkillRoute(): ReactElement {
         </TerminalPanel>
       ) : null}
 
-      {/* Instructions first: what the skill does is the reason to read the
+      {/* Cheapest question first. The page reads description (always visible)
+          → one concrete example → the full procedure → install. A visitor
+          deciding whether they want this skill is served by seeing it fire
+          before reading two hundred lines of instructions.
+
+          Skills without a SIMULATION.md render nothing here. Absent is a
+          normal state, not a gap, so there is no placeholder. */}
+      {skill.simulation ? (
+        <details className={styles.disclosure} aria-labelledby="simulation">
+          <summary className={styles.summary}>
+            <span className={styles.marker} aria-hidden="true">
+              ▸
+            </span>
+            <h2 id="simulation" className={styles.summaryHeading}>
+              Simulation Example
+            </h2>
+            <span className={styles.summaryMeta}>{skill.simulation.title}</span>
+          </summary>
+          <div className={styles.disclosureBody}>
+            <SimulationPanel skillName={skill.name} simulation={skill.simulation} />
+          </div>
+        </details>
+      ) : null}
+
+      {/* Instructions next: what the skill does is the reason to read the
           page, and the install methods used to bury it below the fold. */}
       <details className={styles.disclosure} aria-labelledby="instructions">
         <summary className={styles.summary}>

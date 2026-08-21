@@ -1,0 +1,191 @@
+.panel {
+  margin-top: 0.35rem;
+}
+
+.source {
+  font-size: 0.72rem;
+  color: var(--term-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--term-line);
+}
+
+.source:hover {
+  color: var(--term-ink);
+}
+
+.turns {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: none;
+}
+
+.turn + .turn {
+  margin-top: 1.35rem;
+}
+
+/* ------------------------------------------------------- speaker line */
+
+.speaker {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin: 0 0 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
+.marker {
+  flex: none;
+  color: inherit;
+}
+
+.role {
+  font-weight: 700;
+}
+
+.label {
+  color: var(--term-muted);
+}
+
+.label::before {
+  content: '· ';
+}
+
+/* One hue per speaker, all four already in tokens.css — the terminal palette
+   is shared across both colour schemes, so nothing here needs a dark variant. */
+.user .speaker {
+  color: var(--term-accent);
+}
+
+.assistant .speaker {
+  color: var(--term-accent-alt);
+}
+
+.tool .speaker,
+.note .speaker {
+  color: var(--term-muted);
+}
+
+/* ------------------------------------------------------------- bodies */
+
+.body {
+  padding-left: 0.95rem;
+  border-left: 1px solid var(--term-line);
+}
+
+.note .body {
+  border-left-color: var(--term-muted);
+}
+
+.note .prose {
+  color: var(--term-muted);
+  font-style: italic;
+}
+
+/* --------------------------------------------- prose on a dark surface */
+
+/* SkillMarkdown's base class is tuned for the light page. Everything below
+   re-points it at the terminal palette for this panel only, so the site keeps
+   exactly one react-markdown pipeline. */
+/* Measure is inherited from the base class, so the transcript sits on the same
+   line length as the description panel above it rather than stopping short and
+   leaving a dead strip of chrome. */
+.prose {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--term-ink);
+}
+
+.prose :global(p),
+.prose :global(ul),
+.prose :global(ol) {
+  margin: 0 0 0.75rem;
+}
+
+.prose > :global(*:last-child) {
+  margin-bottom: 0;
+}
+
+.prose :global(hr) {
+  margin: 0.9rem 0;
+  border-top-color: var(--term-line);
+}
+
+.prose :global(strong) {
+  color: #ffffff;
+}
+
+.prose :global(a) {
+  color: var(--term-accent-alt);
+}
+
+.prose :global(blockquote) {
+  border-left-color: var(--term-muted);
+  background: rgba(237, 238, 240, 0.05);
+}
+
+/* The panel is already terminal chrome, so the per-<pre> title bar and
+   traffic lights that skill-markdown.module.css draws would be chrome inside
+   chrome. Strip them back to a plain block with a rule. */
+.prose :global(pre) {
+  padding: 0.7rem 0.9rem;
+  border: none;
+  border-left: 2px solid var(--term-line);
+  border-radius: 0;
+  background: rgba(237, 238, 240, 0.05);
+}
+
+.prose :global(pre)::before,
+.prose :global(pre)::after {
+  content: none;
+}
+
+.prose :global(pre code) {
+  font-size: 0.8rem;
+}
+
+.prose :global(:not(pre) > code) {
+  background: rgba(237, 238, 240, 0.1);
+  color: var(--term-ink);
+}
+
+.prose :global(th),
+.prose :global(td) {
+  border-color: var(--term-line);
+}
+
+.prose :global(thead th) {
+  background: rgba(237, 238, 240, 0.06);
+}
+
+/* ------------------------------------------------------------- caveat */
+
+.caveat {
+  display: flex;
+  gap: 0.55rem;
+  margin: 1.6rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--term-line);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  line-height: 1.65;
+  color: var(--term-muted);
+}
+
+.caveatLabel {
+  flex: none;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
