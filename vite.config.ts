@@ -1,11 +1,27 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'node:path'
+import { generateStaticRoutes } from './src/lib/staticRoutes'
+
+function staticContentRoutes() {
+  return {
+    name: 'static-content-routes',
+    closeBundle() {
+      const root = import.meta.dirname
+      const routes = generateStaticRoutes({
+        outDir: resolve(root, 'docs'),
+        skillsDir: resolve(root, 'skills'),
+        commandsDir: resolve(root, 'commands'),
+      })
+      console.log(`generated ${routes.length} static route entrypoints`)
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), staticContentRoutes()],
   build: {
-    // Matches the main site's convention: the build output is committed and
-    // GitHub Pages (or the Pages Actions artifact) serves it from ./docs.
+    // GitHub Pages serves the Actions artifact built into ./docs.
     outDir: 'docs',
     emptyOutDir: true,
   },
