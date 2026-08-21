@@ -13,7 +13,16 @@ import {
 import styles from './simulation-panel.module.css'
 
 interface SimulationPanelProps {
-  skillName: string
+  /**
+   * Skill directory name. Supplies the chrome path and the source link for the
+   * common case; a command page passes {@link sourcePath} and {@link sourceUrl}
+   * instead, because its transcript lives outside `skills/`.
+   */
+  skillName?: string
+  /** Monospace path shown in the terminal title bar. Overrides `skillName`. */
+  sourcePath?: string
+  /** Href for the `source` link in the title bar. Overrides `skillName`. */
+  sourceUrl?: string
   simulation: Simulation
 }
 
@@ -54,8 +63,12 @@ function delayLabel(milliseconds: number): string {
  */
 export default function SimulationPanel({
   skillName,
+  sourcePath,
+  sourceUrl,
   simulation,
 }: SimulationPanelProps): ReactElement {
+  const path = sourcePath ?? `skills/${skillName}/SIMULATION.md`
+  const href = sourceUrl ?? simulationSourceUrl(skillName ?? '')
   const totalFrames = simulation.turns.length
   const [currentFrame, setCurrentFrame] = useState(0)
   const [speed, setSpeed] = useState<Speed>(1)
@@ -141,10 +154,10 @@ export default function SimulationPanel({
 
       <TerminalPanel
         as="section"
-        path={`skills/${skillName}/SIMULATION.md`}
+        path={path}
         className={styles.panel}
         action={
-          <a className={styles.source} href={simulationSourceUrl(skillName)}>
+          <a className={styles.source} href={href}>
             source
           </a>
         }

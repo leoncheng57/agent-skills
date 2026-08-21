@@ -28,3 +28,12 @@ export function skillSourceUrl(skillName: string): string {
 export function simulationSourceUrl(skillName: string): string {
   return `${REPO_URL}/blob/${DEFAULT_BRANCH}/skills/${skillName}/SIMULATION.md`
 }
+
+export function commandSourceUrl(name: string): string {
+  return `${REPO_URL}/blob/${DEFAULT_BRANCH}/commands/${name}.md`
+}
+
+/** Command worked examples sit outside `commands/` — see commandsSource.ts. */
+export function commandSimulationSourceUrl(name: string): string {
+  return `${REPO_URL}/blob/${DEFAULT_BRANCH}/command-simulations/${name}.md`
+}
