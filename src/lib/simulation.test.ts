@@ -21,10 +21,8 @@ const WITHOUT_SIMULATION = [
   'build-waves',
   'deep-research-subagents',
   'docs-and-diagram-tooling',
-  'duck-mode',
   'parallel-research-handoff',
   'red-team-this',
-  'worktree-up',
 ] as const
 
 /** Past this the example is trying to be the instructions. */

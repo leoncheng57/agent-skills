@@ -226,3 +226,9 @@ this. Stale registrations block reuse of the same path.
 | Two worktrees corrupt shared state | Two stacks against one bind-mounted dir | One stack at a time; stack-free tiers otherwise |
 | `worktree add` fails on a path you deleted | Stale registration | `git worktree prune` |
 | First test run is red on untouched code | Baseline never established | Run typecheck/test/build before editing |
+
+## Worked example
+
+`SIMULATION.md` in this directory has a short transcript of this skill firing:
+a worktree created and its baseline proven green, then a port collision traced
+back to the sibling worktree that actually owns the socket.
