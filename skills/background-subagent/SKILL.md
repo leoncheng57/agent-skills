@@ -1,6 +1,8 @@
 ---
 name: background-subagent
 description: Hand the request the user just made to a background subagent with the task tool and return immediately instead of doing the work inline. Covers restating the request as a self-contained prompt for an agent with zero conversation context, the OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS precondition for background:true, choosing the subagent_type, resuming or adding context to a running task with task_id, reporting what was launched and then stopping rather than duplicating the work, and when backgrounding is the wrong call. Use when the user says "do this in the background", "kick that off", "hand it to a subagent", "run that async", "don't block on it", or "fire and forget".
+metadata:
+  tags: "subagents"
 ---
 
 # Fire the current prompt at a background subagent

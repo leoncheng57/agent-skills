@@ -1,6 +1,8 @@
 ---
 name: deep-research-subagents
 description: Escalate one large research question to parallel read-only subagents instead of grinding through it inline, then synthesise the reports into a single answer. Covers the signals that justify delegation (breadth across many files, repos or docs; several independent unknowns; a search that would blow the main context), how to split a question into non-overlapping axes, how to write a subagent prompt that returns something usable (explicit deliverable, cite-your-sources, read-only constraint, flag-what-you-could-not-verify), fan-out limits, and how to synthesise rather than concatenate. Use when asked to "research this properly", "go deep on", "do a thorough investigation", "use subagents", "spend more effort on this", or when a question needs 20+ tool calls across unrelated areas.
+metadata:
+  tags: "subagents, research"
 ---
 
 # Deep research with parallel subagents

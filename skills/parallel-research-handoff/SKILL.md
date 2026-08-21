@@ -1,6 +1,8 @@
 ---
 name: parallel-research-handoff
 description: Research several independent feature ideas in parallel with read-only subagents, compile the findings into self-contained handoff prompts, and fire those prompts off as parallel agent sessions in fresh git worktrees. Use when the user drops a list of 2+ unrelated tasks and wants them researched and then handed to other agents, says "research these with subagents", "spin these up in parallel", "give me prompts I can paste into other agents", "use N worktrees", or asks whether many subagents are good for research.
+metadata:
+  tags: "subagents, research, worktrees"
 ---
 
 # Parallel research → handoff prompts → multi-session fire-off

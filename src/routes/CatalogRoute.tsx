@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { useMemo, useState, type ReactElement } from 'react'
+import { useCallback, useMemo, useRef, useState, type ReactElement } from 'react'
 import { InstallScopeTable } from '../components/InstallBlock'
 import SkillCard from '../components/SkillCard'
 import { EXTERNAL_SKILL_SOURCES } from '../lib/externalSkills'
@@ -10,9 +10,19 @@ import styles from './catalog.module.css'
 
 export default function CatalogRoute(): ReactElement {
   const [query, setQuery] = useState('')
+  const filterInputRef = useRef<HTMLInputElement>(null)
   // Every skill is already inlined in the bundle, so filtering is a substring
   // scan over an in-memory array — no search index, no fetch.
   const visible = useMemo(() => filterSkills(skills, query), [query])
+
+  // A tag chip is just a shortcut into the existing filter. Focus moves to the
+  // input afterwards for two reasons: it shows *why* the grid changed, and the
+  // browser scrolls the focused field into view when the chip that was clicked
+  // sat further down the page than the filter.
+  const selectTag = useCallback((tag: string) => {
+    setQuery(tag)
+    filterInputRef.current?.focus()
+  }, [])
 
   return (
     <div className={styles.page}>
@@ -50,6 +60,7 @@ export default function CatalogRoute(): ReactElement {
             </label>
             <input
               id="skill-filter"
+              ref={filterInputRef}
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -73,7 +84,7 @@ export default function CatalogRoute(): ReactElement {
         {visible.length > 0 ? (
           <div className={styles.grid}>
             {visible.map((skill) => (
-              <SkillCard key={skill.name} skill={skill} />
+              <SkillCard key={skill.name} skill={skill} onTagSelect={selectTag} />
             ))}
           </div>
         ) : (

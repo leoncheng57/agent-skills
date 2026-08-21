@@ -8,6 +8,26 @@ import {
   parseTags,
   titleFromName,
 } from './skills'
+import { skills as realSkills } from './skillsSource'
+
+/**
+ * The shared tag vocabulary, deliberately small. Tags exist to *group* skills,
+ * so a tag on exactly one skill filters nothing and is worse than no tag —
+ * hence the "at least two skills" assertion below. Adding a skill that needs a
+ * genuinely new concept means editing this list on purpose, in review, rather
+ * than letting the vocabulary drift one bespoke tag at a time.
+ */
+const TAG_VOCABULARY = [
+  'critique',
+  'diagrams',
+  'docs',
+  'output-style',
+  'research',
+  'subagents',
+  'worktrees',
+] as const
+
+const MAX_TAGS_PER_SKILL = 3
 
 const SKILL_MD = [
   '---',
@@ -154,6 +174,44 @@ describe('loadSkillsFromFiles', () => {
 
   it('picks up any directory without a hand-maintained list', () => {
     expect(skills).toHaveLength(2)
+  })
+})
+
+describe('the shipped skills', () => {
+  it('loads every skill directory', () => {
+    expect(realSkills.length).toBeGreaterThan(0)
+  })
+
+  it.each(realSkills.map((skill) => [skill.name, skill.tags] as const))(
+    `%s has 1-${MAX_TAGS_PER_SKILL} tags, all from the shared vocabulary`,
+    (_name, tags) => {
+      expect(tags.length).toBeGreaterThanOrEqual(1)
+      expect(tags.length).toBeLessThanOrEqual(MAX_TAGS_PER_SKILL)
+      expect(TAG_VOCABULARY).toEqual(expect.arrayContaining(tags))
+    }
+  )
+
+  it('uses every tag in the vocabulary on at least two skills', () => {
+    const usage = new Map<string, number>(TAG_VOCABULARY.map((tag) => [tag, 0]))
+    for (const skill of realSkills) {
+      for (const tag of skill.tags) {
+        usage.set(tag, (usage.get(tag) ?? 0) + 1)
+      }
+    }
+
+    const notGrouping = [...usage].filter(([, count]) => count < 2).map(([tag, count]) => `${tag} (${count})`)
+    expect(notGrouping).toEqual([])
+  })
+
+  it('makes every tag reachable through the filter', () => {
+    for (const tag of TAG_VOCABULARY) {
+      const matched = filterSkills(realSkills, tag).map((skill) => skill.name)
+      const tagged = realSkills.filter((skill) => skill.tags.includes(tag)).map((skill) => skill.name)
+
+      // Substring matching means the filter may also catch a name or
+      // description, so this is a superset check rather than equality.
+      expect(matched).toEqual(expect.arrayContaining(tagged))
+    }
   })
 })
 

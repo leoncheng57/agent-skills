@@ -1,6 +1,8 @@
 ---
 name: docs-and-diagram-tooling
 description: Choose the right visual medium when writing documentation and use the diagram and preview tooling actually installed on this machine, instead of hand-writing Mermaid into a file nobody renders. Covers when a diagram beats prose, a table or a list; picking ASCII vs Mermaid vs rendered SVG based on where the doc will be read (terminal, PR description, GitHub, Backstage TechDocs); the mermaid MCP render tools and the diagram subagent; cmux markdown live preview; and deepctl techdocs serve for Backstage TechDocs. Use when asked to "write docs", "document this", "add a diagram to the README", "make an architecture doc", "render this diagram", or "how do I preview these docs".
+metadata:
+  tags: "diagrams, docs"
 ---
 
 # Docs and diagram tooling on this machine

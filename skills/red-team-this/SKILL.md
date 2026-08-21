@@ -1,6 +1,8 @@
 ---
 name: red-team-this
 description: Argue against a plan, design, or diff the agent just produced, switching sides and grounding every objection in file:line, command output, or a doc URL. Use when the user says "red team this", "argue against it", "attack this plan", "poke holes in this diff", "what would go wrong", "convince me not to", or wants an adversarial review of work the agent itself authored.
+metadata:
+  tags: "critique"
 ---
 
 # Red team this

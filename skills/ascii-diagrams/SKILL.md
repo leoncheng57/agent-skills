@@ -1,6 +1,8 @@
 ---
 name: ascii-diagrams
 description: Draw annotated ASCII diagrams instead of prose walls when explaining a multi-step plan, a large change set, a data flow, a UI proposal, or the state of a long session. Covers three diagram types (annotated file tree with NEW/MOD status column, vertical data flow with failure-mode annotations, box-drawing UI mockup), the box-drawing character set, alignment and width discipline, and the rule that every annotation must add information the structure cannot show. Use when asked to "show me the plan", "what files change", "diagram this", "sketch the UI", "draw the flow", "summarize where we are", or when about to write more than a few paragraphs describing a change set or architecture.
+metadata:
+  tags: "diagrams, docs, output-style"
 ---
 
 # ASCII diagrams that are worth reading
