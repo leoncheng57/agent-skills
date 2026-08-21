@@ -64,15 +64,14 @@
   color: var(--text-muted);
 }
 
-.footer {
+/* Align the design-system footer with the 62rem shell the masthead and main
+   column use (it defaults to a wider 1040px), and restore the page's bottom
+   breathing room. The class is doubled purely for specificity: it and
+   .footer in site-footer.module.css are both single-class selectors, so
+   without the bump the winner would depend on which CSS module happens to
+   land last in the bundle. */
+.siteFooter.siteFooter {
   width: min(100%, 62rem);
   margin: 0 auto;
-  padding: 1.5rem 1rem 2.5rem;
-  border-top: 1px solid var(--line);
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.footer p {
-  margin: 0;
+  padding: 0.85rem 1rem 2.5rem;
 }
