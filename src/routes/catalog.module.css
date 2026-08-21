@@ -101,12 +101,69 @@
 
 .filterInput {
   width: min(18rem, 46vw);
+  /* WebKit paints input[type="search"] as a native searchfield — a light
+     rounded pill with a magnifier glyph that collides with the `filter`
+     label. Current WebKit happens to drop that chrome once an author sets
+     both `border` and `background`, but that degradation is an undocumented
+     heuristic, not a guarantee; resetting the appearance makes the flat
+     rendering explicit rather than incidental. */
+  appearance: none;
+  -webkit-appearance: none;
   border: none;
   background: transparent;
   color: var(--text-primary);
   font-family: var(--mono);
   font-size: 0.84rem;
   padding: 0.2rem 0;
+}
+
+/* The native clear affordance is NOT covered by the reset above — it lives in
+   the input's shadow tree and keeps rendering as a grey circle-X the moment
+   the field is non-empty, which is the one piece of native chrome that still
+   shows on current WebKit. It is replaced by .filterClear rather than simply
+   dropped: Escape does not clear this field (measured, both with and without
+   the native button), so removing it outright would cost the only one-click
+   clear. Two rules, not a selector list: one unsupported pseudo-element would
+   invalidate the whole list. */
+.filterInput::-webkit-search-cancel-button {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.filterInput::-webkit-search-decoration {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Styled stand-in for the native cancel button, shown while the filter is
+   non-empty. It sits beside the input rather than inside it, so it cannot
+   overlap the text the way the native glyph did. */
+.filterClear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.filterClear:hover {
+  color: var(--text-primary);
+}
+
+/* Kept mounted while the field is empty so the container does not jump wider
+   on the first keystroke — the native button it replaces lived inside the
+   input's own box and cost no layout. */
+.filterClearHidden {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .filterInput:focus {

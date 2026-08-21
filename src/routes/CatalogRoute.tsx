@@ -1,3 +1,4 @@
+import cx from 'classnames'
 import { useMemo, useState, type ReactElement } from 'react'
 import { InstallScopeTable } from '../components/InstallBlock'
 import SkillCard from '../components/SkillCard'
@@ -41,9 +42,14 @@ export default function CatalogRoute(): ReactElement {
             </span>
           </h2>
 
-          <label className={styles.filter}>
-            <span className={styles.filterLabel}>filter</span>
+          {/* Not a wrapping <label>: the clear button is interactive content,
+              which a label may not contain other than its own control. */}
+          <div className={styles.filter}>
+            <label className={styles.filterLabel} htmlFor="skill-filter">
+              filter
+            </label>
             <input
+              id="skill-filter"
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -51,7 +57,17 @@ export default function CatalogRoute(): ReactElement {
               className={styles.filterInput}
               autoComplete="off"
             />
-          </label>
+            <button
+              type="button"
+              className={cx(styles.filterClear, { [styles.filterClearHidden]: query === '' })}
+              onClick={() => setQuery('')}
+              aria-label="Clear filter"
+              aria-hidden={query === ''}
+              tabIndex={query === '' ? -1 : 0}
+            >
+              &times;
+            </button>
+          </div>
         </div>
 
         {visible.length > 0 ? (
