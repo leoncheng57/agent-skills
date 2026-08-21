@@ -24,7 +24,7 @@ function allTurns(container: HTMLElement): HTMLLIElement[] {
   return Array.from(container.querySelectorAll(`.${styles.turns} > li`))
 }
 
-function advance(milliseconds = 10_000) {
+function advance(milliseconds = 3_000) {
   act(() => vi.advanceTimersByTime(milliseconds))
 }
 
@@ -59,7 +59,8 @@ describe('SimulationPanel', () => {
     expect(turns[0]).not.toHaveAttribute('hidden')
     expect(turns[1]).not.toHaveAttribute('hidden')
     expect(turns[2]).toHaveAttribute('hidden')
-    expect(screen.getByText('frame 2 of 4 · next frame in 10s')).toBeInTheDocument()
+    expect(screen.getByText('frame 2 of 4')).toBeInTheDocument()
+    expect(screen.getByText(/next frame in 3s/)).toBeInTheDocument()
   })
 
   it('pauses without advancing', () => {
@@ -69,7 +70,8 @@ describe('SimulationPanel', () => {
     advance(30_000)
 
     expect(allTurns(container)[1]).toHaveAttribute('hidden')
-    expect(screen.getByText('frame 1 of 4 · paused')).toBeInTheDocument()
+    expect(screen.getByText('frame 1 of 4')).toBeInTheDocument()
+    expect(screen.getByText(/· paused/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /play/i })).toBeEnabled()
   })
 
@@ -80,7 +82,8 @@ describe('SimulationPanel', () => {
     let turns = allTurns(container)
     expect(turns[1]).not.toHaveAttribute('hidden')
     expect(turns[2]).toHaveAttribute('hidden')
-    expect(screen.getByText('frame 2 of 4 · paused')).toBeInTheDocument()
+    expect(screen.getByText('frame 2 of 4')).toBeInTheDocument()
+    expect(screen.getByText(/· paused/)).toBeInTheDocument()
 
     advance(20_000)
     expect(turns[2]).toHaveAttribute('hidden')
@@ -101,16 +104,18 @@ describe('SimulationPanel', () => {
 
     expect(allTurns(container)[0]).not.toHaveAttribute('hidden')
     expect(allTurns(container).slice(1).every((turn) => turn.hasAttribute('hidden'))).toBe(true)
-    expect(screen.getByText('frame 1 of 4 · paused')).toBeInTheDocument()
+    expect(screen.getByText('frame 1 of 4')).toBeInTheDocument()
+    expect(screen.getByText(/· paused/)).toBeInTheDocument()
   })
 
   it('applies a changed speed to the next interval without moving the frame', () => {
     const { container } = renderPanel()
 
     fireEvent.change(screen.getByRole('combobox', { name: /speed/i }), { target: { value: '2' } })
-    expect(screen.getByText('frame 1 of 4 · next frame in 5s')).toBeInTheDocument()
+    expect(screen.getByText('frame 1 of 4')).toBeInTheDocument()
+    expect(screen.getByText(/next frame in 2s/)).toBeInTheDocument()
 
-    advance(4_999)
+    advance(1_499)
     expect(allTurns(container)[1]).toHaveAttribute('hidden')
     advance(1)
     expect(allTurns(container)[1]).not.toHaveAttribute('hidden')
@@ -124,26 +129,43 @@ describe('SimulationPanel', () => {
     advance()
 
     expect(allTurns(container).every((turn) => !turn.hasAttribute('hidden'))).toBe(true)
-    expect(screen.getByText('frame 4 of 4 · playback complete')).toBeInTheDocument()
+    expect(screen.getByText('frame 4 of 4')).toBeInTheDocument()
+    expect(screen.getAllByText(/playback complete/).length).toBeGreaterThan(0)
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /play/i })).toBeDisabled()
 
     advance(30_000)
-    expect(screen.getByText('frame 4 of 4 · playback complete')).toBeInTheDocument()
+    expect(screen.getByText('frame 4 of 4')).toBeInTheDocument()
+    expect(screen.getAllByText(/playback complete/).length).toBeGreaterThan(0)
   })
 
   it('announces frame changes in a polite live region', () => {
     renderPanel()
-    const status = screen.getByText('frame 1 of 4 · next frame in 10s')
+    const status = screen.getByText('frame 1 of 4')
 
     expect(status).toHaveAttribute('aria-live', 'polite')
     advance()
     expect(status).toHaveTextContent('frame 2 of 4')
   })
 
+  it('counts down visually without making every tick a live announcement', () => {
+    renderPanel()
+
+    expect(screen.getByText(/next frame in 3s/)).toHaveAttribute('aria-hidden', 'true')
+    const progress = screen.getByRole('progressbar', { name: /time until next frame/i })
+    expect(progress).toHaveAttribute('max', '3000')
+    expect(progress).toHaveAttribute('value', '0')
+
+    advance(1_050)
+
+    expect(screen.getByText(/next frame in 2s/)).toBeInTheDocument()
+    expect(Number(progress.getAttribute('value'))).toBeGreaterThanOrEqual(1_000)
+    expect(screen.getByText('frame 1 of 4')).toHaveAttribute('aria-live', 'polite')
+  })
+
   it('cleans up the active timer on unmount', () => {
     const { unmount } = renderPanel()
-    expect(vi.getTimerCount()).toBe(1)
+    expect(vi.getTimerCount()).toBe(2)
 
     unmount()
 
@@ -166,7 +188,8 @@ describe('SimulationPanel', () => {
     advance(30_000)
 
     expect(allTurns(container)[1]).toHaveAttribute('hidden')
-    expect(screen.getByText('frame 1 of 4 · Autoplay off (reduced motion)')).toBeInTheDocument()
+    expect(screen.getByText('frame 1 of 4')).toBeInTheDocument()
+    expect(screen.getAllByText(/Autoplay off \(reduced motion\)/).length).toBeGreaterThan(0)
     expect(screen.getByRole('button', { name: /play/i })).toBeDisabled()
     fireEvent.click(screen.getByRole('button', { name: /next/i }))
     expect(allTurns(container)[1]).not.toHaveAttribute('hidden')

@@ -8,15 +8,15 @@ import {
 } from './simulationPlayback'
 
 describe('simulation playback timing', () => {
-  it('uses ten seconds as the default frame duration', () => {
-    expect(DEFAULT_FRAME_MS).toBe(10_000)
+  it('uses three seconds as the default frame duration', () => {
+    expect(DEFAULT_FRAME_MS).toBe(3_000)
   })
 
   it.each([
-    [0.5, 20_000],
-    [1, 10_000],
-    [2, 5_000],
-    [4, 2_500],
+    [0.5, 6_000],
+    [1, 3_000],
+    [2, 1_500],
+    [4, 750],
   ] as const)('maps %sx speed to %sms', (speed, delay) => {
     expect(SPEEDS).toContain(speed)
     expect(frameDelayMs(speed)).toBe(delay)

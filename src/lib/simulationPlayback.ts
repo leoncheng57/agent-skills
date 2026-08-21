@@ -1,4 +1,4 @@
-export const DEFAULT_FRAME_MS = 10_000
+export const DEFAULT_FRAME_MS = 3_000
 
 export const SPEEDS = [0.5, 1, 2, 4] as const
 
