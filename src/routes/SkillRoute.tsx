@@ -128,12 +128,14 @@ export default function SkillRoute(): ReactElement {
             ▸
           </span>
           <h2 id="instructions" className={styles.summaryHeading}>
-            Instructions
+            Full Instructions
           </h2>
           <span className={styles.summaryMeta}>{skill.readingTimeMinutes} min read</span>
         </summary>
         <div className={styles.disclosureBody}>
-          <SkillMarkdown content={skill.body} />
+          <div className={styles.instructionsCard}>
+            <SkillMarkdown content={skill.body} />
+          </div>
         </div>
       </details>
 
