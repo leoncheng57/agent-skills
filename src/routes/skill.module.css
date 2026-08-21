@@ -159,6 +159,17 @@
   padding: 0.35rem 0.15rem 1.5rem;
 }
 
+.instructionsCard {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  overflow-wrap: anywhere;
+  border: var(--edge);
+  box-shadow: 5px 5px 0 var(--shadow-color);
+  background: var(--surface);
+}
+
 /* The install block is a utility area, not part of the document, so it gets
    the site's panel treatment instead of sitting on the page background. */
 .installDisclosure {
