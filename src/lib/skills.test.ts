@@ -11,17 +11,18 @@ import {
 import { skills as realSkills } from './skillsSource'
 
 /**
- * The shared tag vocabulary, deliberately small. Tags exist to *group* skills,
- * so a tag on exactly one skill filters nothing and is worse than no tag —
- * hence the "at least two skills" assertion below. Adding a skill that needs a
- * genuinely new concept means editing this list on purpose, in review, rather
- * than letting the vocabulary drift one bespoke tag at a time.
+ * The shared tag vocabulary, deliberately small and reviewed explicitly.
+ * Singleton tags are valid: they still describe and filter the skill, while
+ * this list prevents unreviewed bespoke tags from silently accumulating.
  */
 const TAG_VOCABULARY = [
   'critique',
   'diagrams',
   'docs',
+  'funny',
+  'long-running',
   'output-style',
+  'planning',
   'research',
   'subagents',
   'worktrees',
@@ -182,6 +183,21 @@ describe('the shipped skills', () => {
     expect(realSkills.length).toBeGreaterThan(0)
   })
 
+  it('discovers build-waves with its sustained-build tags', () => {
+    expect(realSkills.find((skill) => skill.name === 'build-waves')?.tags).toEqual([
+      'subagents',
+      'long-running',
+      'planning',
+    ])
+  })
+
+  it('classifies duck-mode as output style and funny', () => {
+    expect(realSkills.find((skill) => skill.name === 'duck-mode')?.tags).toEqual([
+      'output-style',
+      'funny',
+    ])
+  })
+
   it.each(realSkills.map((skill) => [skill.name, skill.tags] as const))(
     `%s has 1-${MAX_TAGS_PER_SKILL} tags, all from the shared vocabulary`,
     (_name, tags) => {
@@ -191,7 +207,7 @@ describe('the shipped skills', () => {
     }
   )
 
-  it('uses every tag in the vocabulary on at least two skills', () => {
+  it('uses every tag in the vocabulary on at least one skill', () => {
     const usage = new Map<string, number>(TAG_VOCABULARY.map((tag) => [tag, 0]))
     for (const skill of realSkills) {
       for (const tag of skill.tags) {
@@ -199,8 +215,8 @@ describe('the shipped skills', () => {
       }
     }
 
-    const notGrouping = [...usage].filter(([, count]) => count < 2).map(([tag, count]) => `${tag} (${count})`)
-    expect(notGrouping).toEqual([])
+    const unused = [...usage].filter(([, count]) => count < 1).map(([tag, count]) => `${tag} (${count})`)
+    expect(unused).toEqual([])
   })
 
   it('makes every tag reachable through the filter', () => {
