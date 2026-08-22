@@ -50,7 +50,7 @@ serialize prompts. Posting blindly can race a running turn or lose work.
 ## Optional wake strategies
 
 Use the default attended workflow unless the user explicitly accepts wake-up
-risk. There are three practical levels:
+risk. There are four practical levels:
 
 1. **Human wake, recommended.** Children run `cmux notify`; the user sends
    "continue" when ready. This is simple and honest. The durable plan makes the
@@ -65,6 +65,41 @@ risk. There are three practical levels:
    idle on the same OpenCode server, and sends one serialized prompt through the
    session API. Cross-process status is not authoritative, so every participant
    must use that same server.
+4. **One-shot background timer chain, useful for recurring checks.** Launch one
+   read-only background `task` child that waits five minutes, inspects one
+   worker, and returns. Its host-delivered result is a real parent wake channel.
+   If work is still active, the resumed manager captures a fresh baseline and
+   launches exactly one replacement five-minute timer. Repeat until the worker
+   is delivered or blocked.
+
+Do not fan out 5-, 10-, and 15-minute timers in advance. Overlapping timers cost
+more, wake the manager with obsolete baselines, and continue reporting after an
+earlier timer already triggered integration. The chain keeps only one pending
+timer and refreshes its evidence on every manager turn.
+
+Timer prompts must carry a freshness baseline. Before launch, record:
+
+```text
+dispatched_at: 2026-08-21T23:40:00Z
+baseline_status_updated_at: 2026-08-21T23:30:02Z
+baseline_pr_head: 177421a
+```
+
+After the delay, a timer may report `READY FOR MANAGER REVIEW` only when all of
+these are true:
+
+- `.agent-status.json.updated_at` is later than `dispatched_at`;
+- the worker reached the expected terminal phase after dispatch;
+- the local branch and remote PR head agree; and
+- current CI results validate that exact PR head.
+
+An old `done` record and green checks on the baseline SHA are stale evidence,
+not readiness. The timer must report `STALE: no post-dispatch transition` and
+include both timestamps and SHAs. On a non-terminal result, the manager launches
+one new five-minute timer with the just-observed timestamp and SHA as its
+baseline. If the PR is already merged, report `SUPERSEDED: already merged` with
+the merge commit. A deleted remote feature branch is expected cleanup after
+merge and must not be misreported as `NOT READY`.
 
 For an explicitly accepted best-effort wake, capture the UUID rather than a
 renumberable `surface:N` reference:
@@ -231,6 +266,9 @@ after merge and only when no follow-up session needs them.
 | Tracker says done but no PR exists | Status is self-reported, not delivery proof | Inspect git and require push/PR evidence |
 | Child silently works in the wrong checkout | Launch used an implicit directory | Relaunch with absolute worktree and branch |
 | External wake starts duplicate turns | Supervisor did not check idle/deduplicate | Disable it until serialization is proven |
+| Timer says ready while worker is still fixing | It trusted a pre-dispatch `done` record or baseline CI | Require post-dispatch timestamp and exact-head checks |
+| Several timers wake for one worker | The manager pre-scheduled 5/10/15-minute checks | Keep exactly one five-minute timer; replace it only after its result |
+| Later timer says merged work is not ready | It requires a feature branch that was deleted after merge | Report `SUPERSEDED` from PR state and merge commit |
 | Manager loses the next action after compaction | Queue existed only in chat | Restore the plan file and synchronized task list |
 
 ## Worked example
