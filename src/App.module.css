@@ -4,6 +4,68 @@
   min-height: 100vh;
 }
 
+.migrationBanner {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  padding: 0.7rem 1rem;
+  border-bottom: var(--edge);
+  background: var(--migration-bg);
+  color: var(--migration-ink);
+  box-shadow: 0 4px 0 var(--shadow-color);
+}
+
+.migrationBannerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  width: min(100%, 60rem);
+  margin: 0 auto;
+}
+
+.migrationTitle {
+  font-family: var(--mono);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.migrationCopy {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.migrationLink {
+  flex: none;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid currentColor;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--migration-ink);
+  text-decoration: none;
+  background: var(--migration-link-bg);
+  box-shadow: 3px 3px 0 var(--migration-ink);
+}
+
+.migrationLink:hover {
+  color: var(--migration-ink);
+  text-decoration: underline;
+}
+
+@media (max-width: 36rem) {
+  .migrationBannerInner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .migrationLink {
+    align-self: flex-start;
+  }
+}
+
 .masthead {
   display: flex;
   align-items: center;

@@ -10,6 +10,7 @@ import CatalogRoute from './routes/CatalogRoute'
 const SkillRoute = lazy(() => import('./routes/SkillRoute'))
 const CommandsRoute = lazy(() => import('./routes/CommandsRoute'))
 const CommandRoute = lazy(() => import('./routes/CommandRoute'))
+const MIGRATION_URL = 'https://github.com/leoncheng57/custom-dca-opencode'
 
 /** Route changes should land at the top of the new page, not mid-article. */
 function ScrollToTop(): null {
@@ -26,6 +27,20 @@ export default function App(): ReactElement {
   return (
     <div className={styles.shell}>
       <ScrollToTop />
+
+      <aside className={styles.migrationBanner} aria-labelledby="migration-title">
+        <div className={styles.migrationBannerInner}>
+          <div>
+            <strong id="migration-title" className={styles.migrationTitle}>
+              Catalog migration in progress
+            </strong>
+            <p className={styles.migrationCopy}>This catalog is no longer maintained here.</p>
+          </div>
+          <a className={styles.migrationLink} href={MIGRATION_URL}>
+            Go to custom-dca-opencode
+          </a>
+        </div>
+      </aside>
 
       <header className={styles.masthead}>
         <Link to="/" className={styles.brand}>
