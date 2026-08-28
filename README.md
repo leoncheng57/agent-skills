@@ -1,7 +1,9 @@
 # agent-skills
 
-> **Moved / deprecated:** This catalog is being migrated and is no longer maintained here.
-> Continue at [leoncheng57/custom-dca-opencode](https://github.com/leoncheng57/custom-dca-opencode).
+> [!WARNING]
+> **This repository is deprecated and no longer maintained.**
+> Active development moved to [leoncheng57/custom-dca-opencode](https://github.com/leoncheng57/custom-dca-opencode).
+> Do not open issues or submit pull requests here.
 
 Portable [agent skills](https://opencode.ai/docs) — reusable workflow instructions
 that a coding agent loads on demand when a task matches the skill's description.
